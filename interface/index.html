@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kestrel Fusion Launcher</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- show the version of the app : -->
+    <p style="position: fixed;top: calc(100% - 43px);">
+        <!-- update element when main.js say the version of the app -->
+        <script> window.electronAPI.setChangeVersion( (v) => { document.querySelector('p').innerText = v } ) </script>
+    </p>
+
+    <!-- this element is displayed when the page is set to "freeze" -->
+    <div id="lock-page" style="display: none;"></div>
+
+
+    <h1>Kestrel Fusion Launcher</h1>
+
+    <div id="mod-container"></div>
+
+    <p></p>
+
+    <button id="add-mod">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+        Import Mod
+    </button>
+
+    <div id="launch-game">
+        <button>LAUNCH GAME</button>
+    </div>
+
+    <!-- The "..." at the right when a mod is on the mouse : -->
+    <div id="mod-param" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+        </svg>
+        <div style="
+            width: 200px;
+            width: min-content;
+            height: 161px;
+            background: white;
+            border: solid 0.4px;
+            border-radius: 6px;
+            transform: translateY(-24px);
+            display: none;
+            cursor: default;
+            justify-content: space-evenly;
+            flex-direction: column;
+        ">
+            <button>Info</button>
+            <button>Open files</button>
+            <button>Delete</button>
+        </div>
+    </div>
+
+    <div id="center-popup" style="display: none;"></div>
+
+    <script src="js/funcpack.js"></script>
+    <script src="js/manage-elements.js"></script>
+
+</body>
+</html>
