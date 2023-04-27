@@ -2,7 +2,7 @@
 
 1. You need to extract the game files (I can't explain here how to make it sorry).
 
-2. Check that in the "game-location.txt" file the text is the path of the folder that contains the game files and the .exe file.
+2. Check that in the "game-location.txt" (at "resource/app") file the text is the path of the folder that contains the game files and the .exe file.
 
 # Using a mod
 
