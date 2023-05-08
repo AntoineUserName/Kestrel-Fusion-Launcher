@@ -7,9 +7,9 @@ const config = require('./config-manager');
 module.exports = (app) => {
 
 
-    function showMDError(path) {
+    function showMDError(errpath) {
         
-        childProcess.exec( JSON.stringify( path.join( __dirname, path + '.md' ) ) );
+        childProcess.exec( JSON.stringify( path.join( __dirname, errpath + '.md' ) ) );
         console.log(config.notLoaded);
         let dateToStop = new Date().getTime() + 5000;
         while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds and stop the app (i use a while because the next steps of the code will be executed)
