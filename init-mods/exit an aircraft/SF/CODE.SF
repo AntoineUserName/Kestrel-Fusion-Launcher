@@ -1,0 +1,27 @@
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+
+
+
+State Base() {
+    
+	Conditions
+	{
+        if(SafeToInterruptGameplay() && PlayerPressedButton("Y") ) {
+
+            if( cPlayer1.GetVehicle() ) {
+                
+				cPlayer1.ClearVehicle();
+				
+            }
+
+        }
+	};
+	Actions
+	{
+	};
+}
+
+
+Base();

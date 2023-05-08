@@ -1,0 +1,210 @@
+body {
+    text-align: center;
+    background-color: #ffe7f1;
+    background-size: cover;
+}
+
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    user-select: none;
+    outline: none;
+}
+
+/* For random buttons : */
+.classic-button {
+    padding: 5px 15px;
+    border: 1px solid gray;
+    background: #fbfbfb;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 5px #00000063;
+    transition: padding 0.4s ease, box-shadow 0.4s ease;
+}
+.classic-button:hover {
+    padding: 5px 19px;
+    box-shadow: 0 0 9px #00000063;
+}
+
+#mod-container {
+
+    display: inline-flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+
+    max-width: 890px;
+    min-width: 90px;
+    width: 75%;
+}
+
+
+#mod-container > .mod-display {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 150px;
+    background: #ffffff;
+    margin: 10px 0;
+    font-size: 70px;
+    align-items: center;
+    padding: 0px 10px;
+    border: none;
+    border-radius: 16px;
+    /* overflow: hidden; */
+    position: relative;
+}
+
+#mod-container > .mod-display > span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#mod-container > .mod-display > .checkbox-box > input {
+    width: 200px;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+
+#mod-container > .mod-display > .checkbox-box {
+    display: grid;
+    width: 200px;
+    height: 75px;
+    border-radius: 45px;
+    box-shadow: 0 0 5px 2px #0000008f;
+    background: rgb(101, 101, 101);
+}
+  
+#mod-container > .mod-display > .checkbox-box > * {
+    grid-area: 1/1;
+}
+
+
+#mod-container > .mod-display > .checkbox-box > .input-skin {
+    --input-circle-size: 50px;
+    
+    user-select: none;
+    pointer-events: none;
+
+    background: rgb(255, 64, 64);
+    border-radius: 50%;
+    width: var(--input-circle-size);
+    height: var(--input-circle-size);
+    transform: translateX(10px);
+    transition: transform 0.4s ease;
+    position: relative;
+    top: calc(calc(100% - var(--input-circle-size)) / 2);
+    box-shadow: 0 0 5px 3px rgba(255, 64, 64, 0.4);
+}
+
+#mod-container > .mod-display > .checkbox-box > input:checked ~ .input-skin {
+    background: rgb(118, 255, 129);
+    box-shadow: 0 0 5px 3px rgba(118, 255, 129, 0.4);
+    transform: translateX(140px);
+}
+
+#mod-container > .mod-display > #mod-param {
+    --size-b: 75px;
+    width: var(--size-b);
+    background: white;
+    border-radius: 50%;
+    height: var(--size-b);
+    cursor: pointer;
+    box-shadow: 1px 1px 5px #00000063;
+    position: absolute;
+    left: calc(100% - 70px);
+    transform: translate(63px, -35px);
+}
+
+
+
+#add-mod {
+    font-size: 30px;
+    background: rgb(255, 85, 76);
+    cursor: pointer;
+    padding: 15px;
+    border: 8px solid white;
+    border-radius: 22px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.451);
+    position: relative;
+    float: right;
+}
+
+
+#launch-game {
+    position: fixed;
+    width: 100%;
+    z-index: 30;
+    left: 0px;
+    top: calc(80% - 40px);
+    user-select: none;
+    pointer-events: none;
+}
+
+#launch-game button {
+    font-size: 30px;
+    background: rgba(255, 76, 88, 0.656);
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+    padding: 10px 35px;
+    border: none;
+    border-radius: 7px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.451);
+    transition: padding 0.4s ease;
+    z-index: 90;
+    user-select: none;
+    pointer-events: all;
+    transition: letter-spacing 0.4s ease, background 0.4s ease;
+}
+
+#launch-game button:hover {
+    letter-spacing: 1.4px;
+    padding: 10px 35px;
+    background: rgb(255, 76, 88);
+}
+
+
+#lock-page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    cursor: progress;
+    z-index: 999999;
+    background: rgba(0, 0, 0, 0.068);
+}
+
+/* Parent of popups */
+#center-popup {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    z-index: 98999;
+    font-size: 24px;
+}
+
+
+@media (max-width: 848px) {
+    
+    #mod-container > .mod-display > span {
+        font-size: 55px;
+    }
+}
+
+@keyframes anim-scale-poping {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

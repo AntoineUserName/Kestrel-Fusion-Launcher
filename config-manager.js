@@ -1,6 +1,6 @@
 const configFileLocation = './config.json';
 const gameLocationFile = './game-location.txt';
-const gameVersionFile = './version.txt';
+//const gameVersionFile = './version.txt';
 
 const fs = require('fs');
 
@@ -25,7 +25,7 @@ if(configDatas.notLoaded == null) {
     
     try {
         // Load game location file :
-        configDatas['game-location'] = fs.readFileSync( gameLocationFile, {encoding: 'utf8'} );
+        configDatas['game-location'] = fs.readFileSync( gameLocationFile, {encoding: 'utf8'} ).replace(/\n/gs, '');
 
     } catch (error) {
         console.error(error);
@@ -53,15 +53,21 @@ if(configDatas.notLoaded == null) {
 // }
 
 
-// Load the game .exe name :
+// Load the game .exe name if he was not already found :
 if(configDatas.exename == null && configDatas.notLoaded == null) {
     
     try {
         
-        let exeFile = fs.readdirSync(configDatas['game-location']).find( f => f.toLowerCase().endsWith('.exe') );
+        let exeFiles = fs.readdirSync(configDatas['game-location']).filter( f => f.toLowerCase().endsWith('.exe') );
 
-        if(exeFile) {
-            configDatas['exename'] = exeFile;
+        if(exeFiles.length > 0) {
+
+            if(exeFiles.length > 1) {
+                exeFiles[0] = exeFiles.find(f =>f.slice(0,2).toUpperCase() == f.slice(0,2)) || exeFiles[0];
+            }
+            
+            configDatas['exename'] = exeFiles[0];
+
         } else {
             throw 'no file with .exe extension in the game folder';
         }
@@ -74,14 +80,36 @@ if(configDatas.exename == null && configDatas.notLoaded == null) {
     }
 }
 
+if(configDatas.notLoaded == null) {
+
+    if(typeof(configDatas["user-preferences"]) != 'object') {
+        configDatas["user-preferences"] = {
+            background: null,
+            themes: []
+        };
+    }
+
+
+    let themes = configDatas['user-preferences'].themes;
+
+    // Check if themes are an array :
+    if(themes == null || typeof(themes) != 'object' || typeof(themes.forEach) != 'function') {
+
+        // If not, set "themes" to an empty array
+        themes = [];
+
+        configDatas['user-preferences'].themes = [];
+    }
+}
+
 
 configDatas.save = () => {
     try {
         
         fs.writeFileSync( configFileLocation, JSON.stringify( configDatas ) );
         return true;
-
     } catch (error) {
+
         console.error(error);
         return false;
     }

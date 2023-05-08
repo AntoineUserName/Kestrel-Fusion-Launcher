@@ -1,0 +1,91 @@
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+
+WorldLevel wlCity("Lego_City");
+
+Bool haveLoadPlanes(false);
+
+Text crashVehicleName1("Elifant");
+//Text crashVehicleName2("Invader");
+Text crashVehicleName2("Hera");
+Text crashVehicleName3("UFO");
+
+Text nextVehicleName( crashVehicleName1 );
+Text nextVehicleType( "Aircraft" );
+
+State Base() {
+
+    Conditions
+    {
+        if(haveLoadPlanes == false && wlCity.IsLoaded() && SafeToInterruptGameplay()) {
+            
+            haveLoadPlanes = true;
+
+            wait(7);
+            
+            While( SafeToInterruptGameplay() == false ) {
+                wait(1);
+            };
+
+            // Show 3 :
+            UI_SetMissionMessage("MISSION_GENERIC_COUNTDOWN_3", 2 );
+            PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+            wait(1);
+            // Show 2 :
+            UI_SetMissionMessage("MISSION_GENERIC_COUNTDOWN_2", 2 );
+            PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+            wait(1);
+            // Show 1 :
+            UI_SetMissionMessage("MISSION_GENERIC_COUNTDOWN_1", 2 );
+            PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+
+            wait(1);
+
+            nextAircraftWave();
+
+        };
+    };
+    Actions
+    {
+    };
+}
+
+
+Function nextAircraftWave () {
+
+    While( SafeToInterruptGameplay() == false ) {
+        wait(1);
+    };
+
+    // Change vehicle which spawn :
+    if(nextVehicleName == crashVehicleName1) {
+        nextVehicleName = crashVehicleName2;
+    } else {
+        if(nextVehicleName == crashVehicleName2) {
+            nextVehicleName = crashVehicleName3;
+        } else {
+            if(nextVehicleName == crashVehicleName3) {
+                nextVehicleName = crashVehicleName1;
+            }
+        }
+    }
+
+    Character playerFocus( cPlayer1 );
+    Position playerPos( playerFocus.GetPosition() );
+
+    Position aircraftPos( playerPos.GetX() + RandomFloat(-5, 5), playerPos.GetY() + 6, playerPos.GetZ() + RandomFloat(-5, 5) );
+
+    Vehicle newAircraft;
+
+    newAircraft = CreateAiVehicle(nextVehicleName, nextVehicleType, aircraftPos, RandomFloat(0, 1));
+
+    wait(1);
+    if(newAircraft) {
+        newAircraft.Release();
+    }
+
+    nextAircraftWave();
+}
+
+Base();

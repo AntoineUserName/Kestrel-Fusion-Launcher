@@ -1,0 +1,270 @@
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+
+WorldLevel wlCity("Lego_City");
+
+Bool haveStarted(false);
+
+Character playerChoose;
+Position playerPos;
+Bool playerNext(false);
+
+
+Text copVehicle1("Hero");
+Text copVehicle2("2016_Dasher");
+Text copVehicle3("Imprisoner");
+
+
+State Base() {
+    
+	Conditions
+	{
+        if(haveStarted == false && wlCity.IsLoaded() && SafeToInterruptGameplay()) {
+            
+            haveStarted = true;
+
+            wait(3);
+
+            nextWave();
+        };
+	};
+	Actions
+	{
+	};
+}
+
+Function nextWave () {
+
+
+    wait(20);
+
+    // Show the couldown :
+
+    // Show 3 :
+    UI_SetMissionMessage("MISSION_GENERIC_COUNTDOWN_3", 2 );
+    PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+    wait(1);
+    // Show 2 :
+    UI_SetMissionMessage("MISSION_GENERIC_COUNTDOWN_2", 2 );
+    PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+    wait(1);
+    // Show 1 :
+    UI_SetMissionMessage("MISSION_GENERIC_COUNTDOWN_1", 2 );
+    PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+
+    wait(0.5);
+
+    // Wait for start event
+    While( SafeToInterruptGameplay() == false ) {
+        wait(1.4);
+    };
+
+    // Select event :
+    Number eventID( RandomInt(0, 5) );
+
+    // Init event variables :
+    playerPos = playerChoose.GetPosition();
+
+    // Switch player focus : (for the 2p mode)
+    if(cPlayer2 && playerNext) {
+        playerChoose = cPlayer2;
+    } else {
+        playerChoose = cPlayer1;
+    }
+    playerNext = playerNext == false;
+
+
+    // Events :  (yes its hard-coded but idk if there is 'switch' in this language)    
+    if( eventID == 0 ) {
+        spawnAircraft("Elifant");
+        wait(0.2);
+        spawnAircraft("Elifant");
+        wait(0.25);
+        spawnAircraft("Elifant");
+        wait(0.25);
+        spawnAircraft("Elifant");
+        wait(0.75);
+        spawnAircraft("Elifant");
+    };
+    if( eventID == 1 ) {
+        Position playerTP( playerPos.GetX(), playerPos.GetY() + 45 + RandomFloat(0, 2) , playerPos.GetZ() );
+
+        if(playerChoose.GetVehicle()) {
+            playerChoose.ClearVehicle();
+        }
+
+        wait(0.15);
+
+        playerChoose.Teleport(playerTP, 0);
+    };
+    if( eventID == 2 ) { // Make pursuit race :
+        
+        Vehicle playerVehicle;
+
+        if(!playerChoose.GetVehicle()) { // If player have car put it into another car
+            
+            playerVehicle = CreateAiVehicle("TaxiCab", "Civic", playerPos, 0);
+
+            playerChoose.EnterVehicle( playerVehicle, #Driver );
+            wait(2.5);
+        }
+
+        spawnCop();
+        wait(3);
+        spawnCop();
+        wait(3);
+        spawnCop();
+
+    };
+    if( eventID == 3 ) {
+        
+        //SlowMo( 7, 1.2 );
+        Character myNPC;
+        
+        StreamedCharacterPreLoad("FrankHoney");
+
+        Wait(1); // Wait to load the character
+
+        myNPC = CreateAiCharacter("FrankHoney", "Special", playerPos, 0);
+        myNPC.Attack( playerChoose );
+        myNPC.SetInvulnerable(false);
+        wait(0.15);
+        
+        myNPC = CreateAiCharacter("FrankHoney", "Special", playerPos, 0);
+        myNPC.Attack( playerChoose );
+        myNPC.SetInvulnerable(false);
+        wait(0.15);
+        
+        myNPC = CreateAiCharacter("FrankHoney", "Special", playerPos, 0);
+        myNPC.Attack( playerChoose );
+        myNPC.SetInvulnerable(false);
+    };
+    if( eventID == 4 ) {
+
+        spawnAircraft("Invader");
+        wait(0.2);
+        spawnAircraft("Invader");
+        wait(0.15);
+        spawnAircraft("Invader");
+        wait(0.1);
+        spawnAircraft("Invader");
+        wait(0.1);
+        spawnAircraft("Invader");
+        
+        StreamedCharacterPreLoad("GreyAlien");
+        wait(1);
+
+        spawnAlien();
+        spawnAlien();
+        spawnAlien();
+        spawnAlien();
+        spawnAlien();
+        spawnAlien();
+
+    };
+    if( eventID == 5 ) {
+        SlowMo( 5, 0.2 );
+
+        wait(5);
+        
+        SlowMo( 8, 8 );
+
+        wait(64);
+    };
+    if( eventID == 999 ) { // Finally i have removed this event
+        StreamedCharacterPreLoad("Pig");
+        wait(1);
+        spawnCreature( "Pig", "RideableCreature", 1 );
+        wait(0.1);
+        spawnCreature( "Pig", "RideableCreature", 1 );
+        wait(0.1);
+        spawnCreature( "Pig", "RideableCreature", 9 );
+        wait(0.05);
+    };
+
+
+    nextWave();
+}
+
+
+Function spawnAlien () {
+
+    Character alien;
+    Position alienPos(playerPos.GetX() + RandomFloat(-3, 3), playerPos.GetY() + 20, playerPos.GetZ() + RandomFloat(-3, 3));
+
+    alien = CreateAiCharacter("GreyAlien", "Collectable", alienPos, 0);
+    
+    wait(0.15);
+    
+    alien.Attack( playerChoose );
+    alien.SetInvulnerable(false);
+
+}
+
+
+Function spawnCop () {
+
+    Position carPos( playerPos.GetX() + RandomFloat(-3, 3), playerPos.GetY() + RandomFloat(0, 1) , playerPos.GetZ() + RandomFloat(-3, 3) );
+    
+    Character cCop;
+    Vehicle copCar;
+
+    Text vehiclePursuitType( copVehicle1 );
+    Number idVehicleType( RandomInt(0, 3) );
+
+    if(idVehicleType == 0) {
+        vehiclePursuitType = copVehicle1;
+    }
+    if(idVehicleType == 1) {
+        vehiclePursuitType = copVehicle2;
+    }
+    if(idVehicleType == 2) {
+        vehiclePursuitType = copVehicle3;
+    }
+    if(idVehicleType == 3) {
+        vehiclePursuitType = copVehicle1;
+    }
+
+
+    cCop = CreateAiCharacter("CopB", "Enforcer", carPos, 0);
+    copCar = CreateAiVehicle(vehiclePursuitType, "Enforcer", carPos, 0);
+
+    wait(1.5);
+
+    // Put the npc into the car :
+    cCop.EnterVehicle(copCar, #DRIVER);
+
+    wait(1);
+
+    if(cCop.GetVehicle()) {
+        copCar.ForceMaxDetail(true);
+        cCop.Pursue(playerChoose, 15, #MATCHSPEED, #IGNORETRAFFICLIGHTS);
+    } else {
+        cCop.Attack( playerChoose );
+        cCop.SetInvulnerable(false);
+    }
+
+}
+
+
+Function spawnCreature (text charname, text chartype, number y) {
+
+    Position charPos(playerPos.GetX() + RandomFloat(-3.5, 3.5), playerPos.GetY() + y, playerPos.GetZ() + RandomFloat(-3.5, 3.5));
+
+    CreateCharacter(charname, chartype, charPos, 0);
+}
+
+
+Function spawnAircraft (text aircraftname) {
+
+    Position planePos( playerPos.GetX() + RandomFloat(-5, 5), playerPos.GetY() + 5 + RandomFloat(0, 2) , playerPos.GetZ() + RandomFloat(-5, 5) );
+    Number planeRot( RandomFloat(0, 1) );
+
+    Vehicle vAircraft( CreateAiVehicle(aircraftname, "Aircraft", planePos, planeRot) );
+
+    vAircraft.Release();
+}
+
+
+Base();

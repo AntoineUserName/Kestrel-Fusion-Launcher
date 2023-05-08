@@ -1,0 +1,28 @@
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+
+State Base() {
+    
+	Conditions
+	{
+		if( cPlayer2 && SafeToInterruptGameplay() ) {
+
+			if( cPlayer1.DistanceTo(cPlayer2) < 0.42 ) {
+				
+				if( cPlayer1.GetVehicle() ) {
+					cPlayer1.ClearVehicle();
+				};
+				cPlayer1.Kill();
+
+			}
+
+        };
+
+	};
+	Actions
+	{
+	};
+};
+
+Base();

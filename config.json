@@ -1,8 +1,7 @@
 {
-  "game-location": "this variable is edited when the config-manager.js script is launched",
-
-  "activated-mods": [],
-  "user-preferences": {
-    "background": null
-  }
+    "activated-mods": [],
+    "user-preferences": {
+        "background":null,
+        "themes":[]
+    }
 }

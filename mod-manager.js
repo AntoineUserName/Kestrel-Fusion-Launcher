@@ -3,13 +3,18 @@ const path = require('path');
 const fsExtra = require('fs-extra');
 const config = require('./config-manager');
 const backupManager = require('./backup-manager');
+const globalVars = require('./global-variables');
 const { exec } = require('child_process');
 
-const modsFolder = path.join(__dirname, '/mods');
+// const modsFolder = path.join(__dirname, '/mods');
+const modsFolder = path.join(globalVars.KFFolderPath, '/mods');
+
+if(!fs.existsSync(modsFolder)) fs.mkdirSync( modsFolder );
+
 let modsLoaded = [];
 
+exports.launcherVersion = "0.0.0"; // This value is edited by the main.js
 
-exports.mainWindow = null; // This value is edited by the main.js
 
 function loadMod(modpath) {
 
@@ -29,7 +34,7 @@ function loadMod(modpath) {
 
         modsLoaded.push( modInfos );
 
-        if(exports.mainWindow != null) exports.mainWindow.webContents.send('addMod', modInfos, config['activated-mods'].includes(modInfos.name));
+        if(globalVars.mainWindow != null) globalVars.mainWindow.webContents.send('addMod', modInfos, config['activated-mods'].includes(modInfos.name));
 
         return true;
 
@@ -79,6 +84,10 @@ function setModIsActivated(modname, isactivated) {
     if(isactivated) {
         
         if(config['activated-mods'].includes( modname ) == false) {
+
+            if(modsLoaded[modToChange]['launcher-version'] != null && modsLoaded[modToChange]['launcher-version'] + '' != exports.launcherVersion) {
+                mainWindow.webContents.send('alert', `Problem :\nthe mod "${modname}" isn't build for this launcher version.\nYou can having bugs if you use it`, null);
+            }
 
             // Apply ressource pack mod files :
             if(modsLoaded[modToChange].addons.ressourcePack) {
@@ -305,8 +314,22 @@ function launchMods() {
         levelpath => {
 
             backupManager.loadBackupFile(
-               path.join(levelpath, 'SCRIPT.TXT'),
-               backupToLoad => backupToLoad + textToAdd
+                path.join(levelpath, 'SCRIPT.TXT'),
+                backupToLoad => {
+                    backupToLoad = backupToLoad.toString('utf8');
+
+                    // If this file is already modified (normally this situation isn't possible) remove the modded part
+                    if(backupToLoad.includes('; Modded scripts :')) {
+                        backupToLoad = backupToLoad.replace(/\; Modded.*/gs, '');
+                    }
+
+                    // Edit the game file :
+                    return backupToLoad + textToAdd
+                },
+                {
+                    init: {encoding: 'utf8'},
+                    new: {encoding: 'utf8'},
+                }
            );
         }
     );
@@ -327,7 +350,7 @@ function duplicateFolder(sourceDir, destinationDir) {
         if(sourceDir == destinationDir) return reject();
 
         if (!fs.existsSync(destinationDir)){
-            fs.mkdirSync(destinationDir);
+            fs.mkdirSync(destinationDir, {recursive: true});
         }
         
         fsExtra.copy(sourceDir, destinationDir, function(error) {
@@ -466,6 +489,31 @@ function addNewMod(initModfolderpath) {
 
     })
 }
+
+
+// Add initial mods
+if(fs.existsSync( path.join(__dirname, 'init-mods') )) {
+    const initModsPath = path.join(__dirname, 'init-mods');
+
+    duplicateFolder(initModsPath, path.join(globalVars.KFFolderPath, 'mods') ).then(
+        () => {
+            console.log('initial mods duplicated');
+
+            setTimeout(() => {
+                try {
+                    removeDir(initModsPath);
+                } catch (error) {
+                    console.error(error);
+                    console.log('error while removing the init mods folder');
+                }
+            }, 75);
+        }
+    )
+    .catch( console.error );
+
+}
+
+
 
 exports.addNewMod = addNewMod;
 exports.loadAllMods = loadAllMods;

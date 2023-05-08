@@ -10,6 +10,10 @@ function setIsPageFrozen(isfrozen) {
 
 
 
+function setScrollLock(islock) {
+    document.body.style.overflow = islock ? 'hidden' : '';
+}
+
 
 /**
  * Request to the user to response yes or no from a text gived
@@ -48,10 +52,6 @@ function isOkTo(text, after) {
     <button class="classic-button" style="margin: 5px;">No</button>
     <button class="classic-button" style="margin: 5px;">Yes</button>
     `;
-
-    function setScrollLock(islock) {
-        document.body.style.overflow = islock ? 'hidden' : '';
-    }
 
     el.querySelector('p').innerText = text;
     el.querySelector('button').onclick = () => {
@@ -98,6 +98,7 @@ function showPopup(text, infotype) {
     user-select: text;
     border-radius: 15px;
     text-align: center;
+    animation: anim-scale-poping 0.2s ease;
     `;
 
     el.innerHTML = `
@@ -109,9 +110,13 @@ function showPopup(text, infotype) {
     el.querySelector('button').onclick = () => {
         el.remove();
         popupParent.style.display = 'none';
+        setScrollLock(false);
     }
 
     popupParent.appendChild( el );
 
     popupParent.style.display = '';
+    
+    setScrollLock(true);
+    scrollTo(0, 0);
 }

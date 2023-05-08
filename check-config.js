@@ -6,6 +6,17 @@ const config = require('./config-manager');
 
 module.exports = (app) => {
 
+
+    function showMDError(path) {
+        
+        childProcess.exec( JSON.stringify( path.join( __dirname, path + '.md' ) ) );
+        console.log(config.notLoaded);
+        let dateToStop = new Date().getTime() + 5000;
+        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds and stop the app (i use a while because the next steps of the code will be executed)
+        app.exit(0);
+    }
+
+
     // If cant load config.json show error
     if(config.notLoaded != null) {
         
@@ -25,36 +36,17 @@ module.exports = (app) => {
                 break;
         }
 
-        childProcess.exec( JSON.stringify( path.join( __dirname, 'errors/' + errorMsgFile + '.md' ) ) );
-        console.log(config.notLoaded);
-        let dateToStop = new Date().getTime() + 5000;
-        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds and stop the app
-        app.quit();
-        dateToStop = new Date().getTime() + 5000;
-        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds to be sure that the app is stopped
-        throw "stop app";
+        showMDError('errors/' + errorMsgFile);
     }
 
     // Check if the game-location.txt return to the game files
     if( fs.existsSync(config['game-location']) == false ) {
-        childProcess.exec( JSON.stringify( path.join( __dirname, 'errors/bad-game-location.md' ) ) );
-        let dateToStop = new Date().getTime() + 5000;
-        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds and stop the app
-        app.quit();
-        dateToStop = new Date().getTime() + 5000;
-        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds to be sure that the app is stopped
-        throw "stop app";
+        showMDError('errors/bad-game-location');
     }
 
     // Check if the user have extracted the game files by cheking if there are the "CHARS" folder
     if( fs.existsSync( path.join(config['game-location'], '/CHARS') ) == false ) {
-        childProcess.exec( JSON.stringify( path.join( __dirname, 'README.md' ) ) );
-        let dateToStop = new Date().getTime() + 5000;
-        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds and stop the app
-        app.quit();
-        dateToStop = new Date().getTime() + 5000;
-        while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds to be sure that the app is stopped
-        throw "stop app";
+        showMDError('README');
     }
 
     // Add the version of the app
