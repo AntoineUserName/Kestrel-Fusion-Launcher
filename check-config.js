@@ -13,7 +13,7 @@ module.exports = (app) => {
         console.log(config.notLoaded);
         let dateToStop = new Date().getTime() + 5000;
         while (new Date().getTime() < dateToStop) {}; // Wait 5 seconds and stop the app (i use a while because the next steps of the code will be executed)
-        app.exit(0);
+        process.exit(0);
     }
 
 
