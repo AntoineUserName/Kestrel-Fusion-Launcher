@@ -25,3 +25,7 @@ Open the app and active the mod by the checkbox of the mod profile.
 3. Click on open.
 
 4. If you have an error message, check if you have selected the folder with the mod.json file.
+
+# How the launcher edit files ?
+
+Each time the launcher edits a file it saves a backup of the file at "GAMEPATH/KF-Files/backup-files" and if you use the beta version the backup folder is at "LAUNCHERPATH/resources/app/backup-files".
