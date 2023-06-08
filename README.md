@@ -1,3 +1,8 @@
+# Copyrights
+This project use icons from https://heroicons.com/ :
+Copyright (c) 2020 Refactoring UI Inc.
+
+
 # Installation
 
 1. You need to extract the game files (I can't explain here how to make it sorry).
