@@ -16,6 +16,12 @@ const template = [
                 }
             },
             {
+                label: 'home',
+                click: () => {
+                    globalVars.openHomeWindow();
+                }
+            },
+            {
                 label: 'open devtool',
                 click: () => {
                     globalVars.mainWindow.webContents.openDevTools();
@@ -158,8 +164,49 @@ const template = [
                 }
         }
         ]
+    },
+
+    {
+        label: 'characters',
+        submenu: [
+            {
+                label: 'new character',
+                click: () => {
+                    require('./character-manager/character-manager').openCharEditorWindow();
+                }
+            },
+        ]
+    },
+
+    {
+        label: 'lisence and copyrights',
+        submenu: [
+            {
+                label: 'view the lisence',
+                click: () => {
+                    globalVars.createWindow(
+                        require('./window-types.json').LICENSE,
+                        'license-and-copyrights/preload.js',
+                        true
+                    );
+                }
+            },
+            {
+                label: 'view the copyrights',
+                click: () => {
+                    globalVars.createWindow(
+                        require('./window-types.json').COPYRIGHTS,
+                        'license-and-copyrights/preload.js',
+                        true
+                    );
+                }
+            }
+        ]
     }
 ];
+
+
+
 
 // Using camelcase with the menu buttons :
 template.forEach(

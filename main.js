@@ -27,6 +27,9 @@ require('./menu-builder'); // Create the menu
 require('./ipc-main-manager'); // Interactions main process <=> window process
 const memoryJS = require('memoryjs');
 
+if(config.firstTime) require("./first-time");
+
+
 console.log('modules loaded');
 
 
@@ -34,9 +37,9 @@ console.log('modules loaded');
 let currentWindowType = windowTypes.MAIN;
 
 
-
-function alertWindow(text, infotype) {
-    globalVars.mainWindow.webContents.send('alert', text, infotype);
+// DONT ACTIVATE "customisable" FOR TEXT THAT ANYBODY CAN EDIT
+function alertWindow(text, customisable) {
+    globalVars.mainWindow.webContents.send('alert', text, customisable);
 }
 
 modManager.launcherVersion = app.getVersion();
@@ -92,43 +95,86 @@ function onWindowReloaded() {
 
 
 
-const createWindow = (urlwindowfile) => {
+const createWindow = (windowtypetoopen, cusompreload, isfullscreen) => {
 
-    // Create the browser window
+    let removeOldWindow = () => null;
+
+    // if there are already a window openned remove it
+    if(globalVars.mainWindow != null) {
+
+        const windowToR = globalVars.mainWindow;
+
+        removeOldWindow = () => {
+            windowToR.close();
+        }
+    }
+
+    let windowWidth = 956, windowHeight = 600;
+
+    if(isfullscreen) {
+        let {screen} = require('electron');
+
+        screen = screen.getPrimaryDisplay().workAreaSize;
+
+        windowWidth = screen.width;
+        windowHeight = screen.height;
+    }
+
+
     globalVars.mainWindow = new BrowserWindow({
-        width: 956,
-        height: 600,
+        width: windowWidth,
+        height: windowHeight,
+        fullscreen: config.fullscreen,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(globalVars.appLocationURL, '/interface/', (cusompreload ?? 'preload.js')),
             contextIsolation: true,
             nodeIntegration: true
         }
     });
 
-    switch (urlwindowfile) {
-        case 'main':
-            urlwindowfile = `file://${globalVars.appLocationURL}/interface/index.html`;
+    currentWindowType = windowtypetoopen;
+
+    switch (windowtypetoopen) {
+        case windowTypes.MAIN:
+            windowtypetoopen = `file://${globalVars.appLocationURL}/interface/index.html`;
+            break;
+        
+        case windowTypes.CHAR_EDITOR:
+            windowtypetoopen = `file://${globalVars.appLocationURL}/interface/character-builder/index.html`;
+            break;
+        
+        case windowTypes.LICENSE:
+            windowtypetoopen = `file://${globalVars.appLocationURL}/interface/license-and-copyrights/license-page.html`;
+            break;
+        
+        case windowTypes.COPYRIGHTS:
+            windowtypetoopen = `file://${globalVars.appLocationURL}/interface/license-and-copyrights/copyrights-page.html`;
             break;
     }
 
     // Load the .html page :
-    globalVars.mainWindow.loadURL(urlwindowfile);
+    globalVars.mainWindow.loadURL(windowtypetoopen);
+    globalVars.mainWindow.webContents.once('dom-ready', removeOldWindow);
 
     return globalVars.mainWindow;
 }
+globalVars.createWindow = createWindow;
 
+function openHomeWindow() {
+    createWindow(windowTypes.MAIN)
+     .webContents.on('dom-ready', onWindowReloaded); // Every time that the window is loaded/reloaded the function "onWindowReloaded" is called
 
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow(windowTypes.MAIN).webContents.once('dom-ready', onWindowReloaded);
+    });
+}
+globalVars.openHomeWindow = openHomeWindow;
 
 // Open the window when the app is ready
 app.whenReady().then(() => {
 
     // Next open the window :
-    createWindow('main')
-     .webContents.on('dom-ready', onWindowReloaded); // Every time that the window is loaded/reloaded the function "onWindowReloaded" is called
-
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow('main').webContents.once('dom-ready', onWindowReloaded);
-    });
+    openHomeWindow();
 });
 
 

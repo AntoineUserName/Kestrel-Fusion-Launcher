@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const childProcess = require('child_process');
 
 const config = require('./config-manager');
 
@@ -8,6 +7,8 @@ module.exports = (app) => {
 
 
     function showMDError(errpath) {
+        
+        const childProcess = require('child_process');
         
         childProcess.exec( JSON.stringify( path.join( __dirname, errpath + '.md' ) ) );
         console.log(config.notLoaded);

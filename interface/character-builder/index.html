@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kestrel Fusion Launcher - Character Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="editor-app">
+    
+        <div id="attributes-editor"></div>
+        <div id="character-renderer">
+            <p></p>
+            You need help to create your character ?
+            Click <button onclick="openNavURL('https://github.com/Kai-Denzel-Jane/LCU-SF-Docs/blob/main/Characters.md')">HERE</button> to view the documentation.
+        </div>
+        <div id="graphic-attributes-editor">
+            <p></p>
+            <label style="
+            border-radius: 4px;
+            padding: 5px 25px;
+            background: white;
+                ">Graphic attributes</label>
+            <p></p>
+        </div>
+    
+    </div>
+    <div id="center-popup" style="display: none;"></div>
+    <div id="page-locker" style="display: none;"></div>
+
+    <script src="js/main.js"></script>
+
+    <script src="js/attr-editor.js"></script>
+    <script src="js/textures-editor.js"></script>
+
+</body>
+</html>

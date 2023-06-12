@@ -1,10 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('./config-manager');
+const { KFFolderPath } = require('./global-variables');
 
-const backupFilesLocation = path.join( __dirname + '/backup-files' );
 
+// const backupFilesLocation = path.join( __dirname, '/backup-files' );
+const backupFilesLocation = path.join( KFFolderPath, '/backup-files' );
 
+if( fs.existsSync(backupFilesLocation) == false ) fs.mkdirSync( backupFilesLocation );
 
 
 function backupFile(filegamepath) {
@@ -36,13 +39,19 @@ function backupFile(filegamepath) {
     }
 }
 
-function loadBackupFile(filegamepath, dataconstructor) {
+
+function loadBackupFile(filegamepath, dataconstructor, fileoptions) {
     
+    if(fileoptions == null) fileoptions = {
+        init: null,
+        new: null
+    }
+
     try {
 
         if(fs.existsSync( path.join( backupFilesLocation, filegamepath ) ) == false) return false;
 
-        let backupToLoad = fs.readFileSync( path.join( backupFilesLocation, filegamepath ) );
+        let backupToLoad = fs.readFileSync( path.join( backupFilesLocation, filegamepath ), fileoptions.init );
 
         if(dataconstructor != null) {
             backupToLoad = dataconstructor(backupToLoad);
@@ -54,7 +63,8 @@ function loadBackupFile(filegamepath, dataconstructor) {
 
         fs.writeFileSync(
             path.join( config['game-location'], filegamepath ),
-            backupToLoad
+            backupToLoad,
+            fileoptions.new
         );
 
         backupToLoad = null;
@@ -68,31 +78,21 @@ function loadBackupFile(filegamepath, dataconstructor) {
 }
 
 
-function getBackupFile(filegamepath) {
+function getBackupFile(filegamepath, fileoptions) {
     
     try {
         
-        let dataToBackup = fs.readFileSync( path.join( config['game-location'], filegamepath ) );
-
-        fs.writeFileSync(
-            path.join( backupFilesLocation, filegamepath ),
-            dataToBackup
-        );
-
-        dataToBackup = null;
-        console.log('new file in backup');
-
-        return true;
+        return fs.readFileSync( path.join( backupFilesLocation, filegamepath ), fileoptions );
 
     } catch (error) {
         console.error(error);
-        return false;
+        
+        return null;
     }
 }
 
 
-// Default backups : (this is backup just when you open the app for the first time)
-backupFile('/LEVELS/LEGO_CITY/LEGO_CITY/AI/SCRIPT.TXT');
+
 
 
 exports.backupFile = backupFile;

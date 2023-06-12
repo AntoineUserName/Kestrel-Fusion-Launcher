@@ -24,12 +24,21 @@ function loadMod(modpath) {
         );
 
         modInfos.name = path.basename( modpath );
-        modInfos.addons = {
-            SF: fs.existsSync(path.join(modpath, '/SF')),
-            python: fs.existsSync(path.join(modpath, '/python')),
-            js: fs.existsSync(path.join(modpath, '/js')),
-            bat: fs.existsSync(path.join(modpath, '/bat')),
-            ressourcePack: fs.existsSync(path.join(modpath, '/install'))
+        if(!modInfos.addons) {
+            modInfos.addons = {
+                SF: fs.existsSync(path.join(modpath, '/SF')),
+                python: fs.existsSync(path.join(modpath, '/python')),
+                js: fs.existsSync(path.join(modpath, '/js')),
+                bat: fs.existsSync(path.join(modpath, '/bat')),
+                ressourcePack: fs.existsSync(path.join(modpath, '/install')),
+                text: fs.existsSync(path.join(modpath, '/text')),
+                chars: fs.existsSync(path.join(modpath, '/chars')),
+                audio: fs.existsSync(path.join(modpath, '/audio'))
+            }
+
+            if(!modInfos.devmode) {
+                fs.writeFileSync( path.join(modpath, '/mod.json'), JSON.stringify(modInfos), {encoding:'utf8'} );
+            }
         }
 
         modsLoaded.push( modInfos );
@@ -54,6 +63,9 @@ function loadMod(modpath) {
 
 function loadAllMods() {
 
+    const timeBeforeLoadingMods = config['not-use-date'] ? 0 : (new Date().getTime());
+    
+
     modsLoaded = [];
 
     let haveModNotLoaded = false;
@@ -64,7 +76,9 @@ function loadAllMods() {
                 haveModNotLoaded = true;
             }
         }
-    )
+    );
+
+    if(!config['not-use-date']) console.log('mods loaded in ' + (new Date().getTime() - timeBeforeLoadingMods));
 
     return haveModNotLoaded;
 }
@@ -81,20 +95,61 @@ function setModIsActivated(modname, isactivated) {
 
     if(modToChange == -1) return;
 
+
+    // add / remove the new characters of the mod before change the activated mods
+    if(modsLoaded[modToChange].addons.chars) {
+
+        const characterManager = require('./character-manager/character-manager'); // (don't load this module at the start of the app)
+        const charFileManager = require('./character-manager/char-file-manager');
+
+        const charsFolderPath = path.join(modsFolder, modname, '/chars');
+
+        if(isactivated) {
+            fs.readdirSync(charsFolderPath).forEach(
+                charfoldername => {
+
+                    console.log(`loading "${charfoldername}"..`);
+                    charFileManager.loadCharMod( path.join(charsFolderPath, charfoldername) );
+                    console.log(`"${charfoldername}" loaded`);
+
+                }
+            );
+        } else {
+            fs.readdirSync(charsFolderPath).forEach(
+                charfoldername => {
+
+                    const charData = JSON.parse( fs.readFileSync(path.join(charsFolderPath, charfoldername, 'char.json'), {encoding: 'utf8'}) );
+
+                    characterManager.removeCharacter(charData.id);
+                }
+            );
+        }
+        
+    }
+
+
     if(isactivated) {
         
+        // Enable a mod :
         if(config['activated-mods'].includes( modname ) == false) {
 
-            if(modsLoaded[modToChange]['launcher-version'] != null && modsLoaded[modToChange]['launcher-version'] + '' != exports.launcherVersion) {
-                mainWindow.webContents.send('alert', `Problem :\nthe mod "${modname}" isn't build for this launcher version.\nYou can having bugs if you use it`, null);
+            if(modsLoaded[modToChange]['launcher-version'] != null) {
+
+                const modV = parseInt(modsLoaded[modToChange]['launcher-version'].replace(/\./g, ''));
+
+                if(parseInt(exports.launcherVersion.replace(/\./g, '')) < modV) {
+                    mainWindow.webContents.send('alert', `WARN :\nthe mod "${modname}" isn't build for this launcher version.\nYou can having bugs if you use it.\nIts recommanded to update your launcher at the last version.`, null);
+                }
             }
 
-            // Apply ressource pack mod files :
+            // *** Apply ressource pack mod files : ***
             if(modsLoaded[modToChange].addons.ressourcePack) {
 
                 const dirModFiles = path.join( modsFolder, '/' + modname, '/install' );
 
                 function rsrcPackFolderLoop(gamepath) {
+                    
+                    if(path.join(config['game-location'], gamepath).toLowerCase() == globalVars.KFFolderPath.toLowerCase()) return;
 
                     // If the folder don't exist in the game create it
                     if(gamepath != '' && fs.existsSync( path.join(config['game-location'], gamepath) ) == false) {
@@ -136,9 +191,11 @@ function setModIsActivated(modname, isactivated) {
         }
 
     } else {
+        
+        // Disable a mod :
         config['activated-mods'] = config['activated-mods'].filter( m => m != modname );
 
-        // Remove ressource pack mod files :
+        // *** Remove ressource pack mod files : ***
         if(modsLoaded[modToChange].addons.ressourcePack) {
 
             const dirModFiles = path.join( modsFolder, '/' + modname, '/install' );
@@ -156,15 +213,19 @@ function setModIsActivated(modname, isactivated) {
                         if(!filename.includes('.')) {
 
                             rsrcPackFolderLoop( path.join(gamepath, '/' + filename) );
-
                             return;
                         }
 
                         const gamePathFile = path.join(gamepath, filename);
 
-                        // Load the file
-                        backupManager.loadBackupFile( gamePathFile );
-
+                        // Load the initial file and if there are no backup of this file, delete it
+                        if(backupManager.loadBackupFile( gamePathFile ) == false) {
+                            try {
+                                if(fs.existsSync(path.join(config['game-location'], gamePathFile))) fs.unlinkSync(path.join(config['game-location'], gamePathFile));
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }
                     }
                 );
             }
@@ -172,6 +233,12 @@ function setModIsActivated(modname, isactivated) {
             rsrcPackFolderLoop( '' );
         }
     }
+
+    // Apply custom texts
+    if(modsLoaded[modToChange].addons.text) updateCSVTexts(false);
+
+    // Apply custom audio
+    if(modsLoaded[modToChange].addons.audio) updateAudioList();
 
     config.save();
 
@@ -188,7 +255,7 @@ function launchMods() {
     config['activated-mods'] = config['activated-mods'].filter( modname => modsLoaded.find(m => m.name == modname) != null );
 
 
-    let textToAdd = '\n; Modded scripts :';
+    let textToAddInScriptList = '\n; Modded scripts :';
 
     let codeToLaunchAfter = [];
 
@@ -207,7 +274,7 @@ function launchMods() {
 
         // Apply .SF files
         if(modInfos.addons.SF) {
-            const dirModP = path.join( modsFolder, '/' + modname + '/SF' );
+            const dirModP = path.join( modsFolder, '/' + modname, '/SF' );
 
             fs.readdirSync( dirModP ).forEach(
                 filename => {
@@ -217,6 +284,8 @@ function launchMods() {
     
                     // let SFFileName = 'MOD_' + filename.toUpperCase().replace(/-/g, '_');
                     let SFFileName = 'LEVEL' + SFFileIndex + '.SF';
+
+                    if(filename.startsWith('_')) SFFileName = 'MOD' + filename.toUpperCase().replace(/-/g, '_').replace(/ /g, '_');
     
                     let scriptData = fs.readFileSync( path.join( dirModP, filename ) );
     
@@ -235,18 +304,18 @@ function launchMods() {
                     )
     
     
-                    textToAdd += '\n' + SFFileName.toLowerCase().split('.', 1)[0] + '	;	' + ( modInfos.name.replace(/\n/g, '').replace(/;/g, '') );
+                    textToAddInScriptList += '\n' + SFFileName.toLowerCase().split('.', 1)[0] + '	;	' + ( modInfos.name.replace(/\n/g, '').replace(/;/g, '') );
                 }
             )
         }
 
         if(modInfos.addons.bat) {
-            const dirModP = path.join( modsFolder, '/' + modname + '/bat' );
+            const dirModP = path.join( modsFolder, '/' + modname, '/bat' );
 
             fs.readdirSync( dirModP ).forEach(
                 filename => {
 
-                    if(path.extname(filename).toLowerCase() != "bat") return;
+                    if(path.extname(filename).toLowerCase() != ".bat") return;
 
                     // If the script will be launched after
                     if(filename.startsWith('_')) {
@@ -265,12 +334,12 @@ function launchMods() {
         
 
         if(modInfos.addons.js) {
-            const dirModP = path.join( modsFolder, '/' + modname + '/js' );
+            const dirModP = path.join( modsFolder, '/' + modname, '/js' );
 
             fs.readdirSync( dirModP ).forEach(
                 filename => {
 
-                    if(path.extname(filename).toLowerCase() != "js") return;
+                    if(path.extname(filename).toLowerCase() != ".js") return;
 
                     
                     // If the script will be launched after
@@ -289,12 +358,12 @@ function launchMods() {
 
 
         if(modInfos.addons.python) {
-            const dirModP = path.join( modsFolder, '/' + modname + '/python' );
+            const dirModP = path.join( modsFolder, '/' + modname, '/python' );
 
             fs.readdirSync( dirModP ).forEach(
                 filename => {
 
-                    if(path.extname(filename).toLowerCase() != "py") return;
+                    if(path.extname(filename).toLowerCase() != ".py") return;
 
                     // If the script will be launched after
                     if(filename.startsWith('_')) {
@@ -308,6 +377,7 @@ function launchMods() {
                 }
             )
         }
+        
     });
 
     levelsFocus.forEach(
@@ -324,7 +394,7 @@ function launchMods() {
                     }
 
                     // Edit the game file :
-                    return backupToLoad + textToAdd
+                    return backupToLoad + textToAddInScriptList
                 },
                 {
                     init: {encoding: 'utf8'},
@@ -333,6 +403,7 @@ function launchMods() {
            );
         }
     );
+
 
     config.save();
 
@@ -353,14 +424,22 @@ function duplicateFolder(sourceDir, destinationDir) {
             fs.mkdirSync(destinationDir, {recursive: true});
         }
         
-        fsExtra.copy(sourceDir, destinationDir, function(error) {
-            if (error) {
-                console.error(error);
-                reject()
-            } else {
-                resolve();
-            }
-        });
+        // fsExtra.copy(sourceDir, destinationDir, function(error) {
+        //     if (error) {
+        //         console.error(error);
+        //         reject()
+        //     } else {
+        //         resolve();
+        //     }
+        // });
+
+        try {
+            fsExtra.copySync(sourceDir, destinationDir);
+            resolve();
+        } catch (error) {
+            console.error(error);
+            reject(error);
+        }
 
     });
 
@@ -423,6 +502,7 @@ function removeMod(modname) {
             modsLoaded = modsLoaded.filter(m => m.name != mod.name);
 
             config['activated-mods'] = config['activated-mods'].filter(m => m != mod.name);
+            config.save();
 
             return true;
 
@@ -433,16 +513,9 @@ function removeMod(modname) {
         }
     }
 
-    // If the mod add files, first try to load backup files and after remove the mod
-    if(mod.addons.ressourcePack) {
-        setModIsActivated(mod.name, false);
-
-        setTimeout(() => { // Its not obligatory but its just to be sure that the mod are deleted after that here are disabled
-            removeTheMod();
-        }, 250);
-
-        return;
-    }
+    
+    setModIsActivated(mod.name, false);
+    
     
     removeTheMod();
 
@@ -491,28 +564,126 @@ function addNewMod(initModfolderpath) {
 }
 
 
-// Add initial mods
-if(fs.existsSync( path.join(__dirname, 'init-mods') )) {
-    const initModsPath = path.join(__dirname, 'init-mods');
+function updateAudioList() {
 
-    duplicateFolder(initModsPath, path.join(globalVars.KFFolderPath, 'mods') ).then(
-        () => {
-            console.log('initial mods duplicated');
+    let textAddedToAList = '\n\n; ==== Modded sounds ====\n';
+    
+    config['activated-mods'].forEach(modname => {
+            
+        let modInfos = modsLoaded.find(m => m.name == modname);
 
-            setTimeout(() => {
+        if(modInfos == null) return;
+
+        if(modInfos.addons.audio) {
+            const dirModP = path.join( modsFolder, '/' + modname, '/audio' );
+
+            fs.readdirSync( dirModP ).forEach(
+                filename => {
+                    if(filename.includes('.') == false || path.extname(filename).toLowerCase() != '.wav') return;
+
+                    let newFileName = filename.replace(/ /g, '_').toUpperCase();
+
+                    let newFilePath = path.join(config['game-location'], 'AUDIO/SAMPLES/MODS', newFileName);
+
+                    // Copy-paste the custom audio :
+                    fs.writeFileSync(
+                        newFilePath,
+                        fs.readFileSync( path.join(dirModP, filename) )
+                    );
+
+                    textAddedToAList += `\nSample 	Name "${newFileName.replace('.WAV', '')}"   Filename "${path.join('MODS', newFileName).replace('.WAV', '').replace(/\//g, '\\')}"    Global  ForceNonPos		ForceNonPos `;
+                }
+            )
+        }
+    });
+
+    
+    backupManager.loadBackupFile('AUDIO/SAMPLES_DEFAULT.CFG', (initvaluefile) => {
+        return initvaluefile.toString('utf8') + textAddedToAList;
+    },
+    {
+        init: {encoding: 'utf8'},
+        new: {encoding: 'utf8'},
+    });
+    
+    backupManager.loadBackupFile('AUDIO/SAMPLES_JAPAN.CFG', (initvaluefile) => {
+        return initvaluefile.toString('utf8') + textAddedToAList;
+    },
+    {
+        init: {encoding: 'utf8'},
+        new: {encoding: 'utf8'},
+    });
+}
+
+
+function updateCSVTexts(cansaveconfig) {
+
+    config['activated-mods'] = config['activated-mods'].filter( modname => modsLoaded.find(m => m.name == modname) != null );
+
+    let textToAddInTextList = '';
+
+
+    config['activated-mods'].forEach(modname => {
+        
+        let modInfos = modsLoaded.find(m => m.name == modname);
+        
+        
+        if(modInfos.addons.text) {
+            
+            const dirModP = path.join( modsFolder, '/' + modname, '/text' );
+
+            fs.readdirSync( dirModP ).forEach(
+                filename => {
+
+                    if(path.extname(filename).toLowerCase() != ".txt" && path.extname(filename).toLowerCase() != ".csv") return;
+                    
+                    textToAddInTextList += '\n' + fs.readFileSync(path.join(dirModP, filename), {encoding: 'utf8'});
+                }
+            );
+        }
+    });
+
+
+    
+    backupManager.backupFile('/STUFF/TEXT/TEXT.CSV');
+    
+    // Edit the game file :
+    backupManager.loadBackupFile(
+        '/STUFF/TEXT/TEXT.CSV',
+        backupToLoad => {
+            return backupToLoad.toString('utf8') + textToAddInTextList;
+        },
+        {
+            init: {encoding: 'utf8'},
+            new: {encoding: 'utf8'},
+        }
+    );
+
+    if(cansaveconfig) config.save();
+
+}
+
+function addInitMods() {
+    // Add initial mods
+    if(fs.existsSync( path.join(__dirname, 'init-mods') )) {
+        const initModsPath = path.join(__dirname, 'init-mods');
+
+        duplicateFolder(initModsPath, path.join(globalVars.KFFolderPath, 'mods') ).then(
+            () => {
+                console.log('initial mods duplicated');
+
                 try {
                     removeDir(initModsPath);
                 } catch (error) {
                     console.error(error);
                     console.log('error while removing the init mods folder');
                 }
-            }, 75);
-        }
-    )
-    .catch( console.error );
+            }
+        )
+        .catch( console.error );
 
+    }
 }
-
 
 
 exports.addNewMod = addNewMod;
@@ -523,3 +694,4 @@ exports.setModIsActivated = setModIsActivated;
 exports.launchMods = launchMods;
 exports.getModsLoaded = () => modsLoaded;
 exports.modsFolder = modsFolder;
+exports.addInitMods = addInitMods;

@@ -59,6 +59,13 @@ body {
     overflow: hidden;
 }
 
+#mod-container > .mod-display > label {
+    font-size: 15px;
+    align-self: end;
+    position: absolute;
+    padding-bottom: 5px;
+}
+
 #mod-container > .mod-display > .checkbox-box > input {
     width: 200px;
     height: 100%;

@@ -3,7 +3,7 @@ let isPageFrozen = false;
 function setIsPageFrozen(isfrozen) {
     isPageFrozen = isfrozen == true; // be sure that its a boolean
 
-    freezePageElement.style.height = document.body.offsetHeight + 100 + 'px';
+    freezePageElement.style.height = document.body.offsetHeight + 370 + 'px';
     
     freezePageElement.style.display = isfrozen ? '' : 'none';
 }
@@ -76,8 +76,12 @@ function isOkTo(text, after) {
 
 }
 
+// DONT ACTIVATE "customisable" FOR TEXT THAT ANYBODY CAN EDIT
+function showPopup(text, customisable) {
 
-function showPopup(text, infotype) {
+    const oldScrollY = scrollY;
+    const oldScrollX = scrollX;
+
     const popupParent = document.getElementById('center-popup');
 
     let el = document.createElement('div');
@@ -106,11 +110,33 @@ function showPopup(text, infotype) {
     <button class="classic-button">OK</button>
     `;
 
-    el.querySelector('p').innerText = text;
+    const textElement = el.querySelector('p');
+
+    textElement.innerText = text;
+
+    if(customisable) {
+        let isFirstStar = true;
+        for (let index = 0; index < textElement.innerHTML.length; index++) {
+            const charTxt = textElement.innerHTML[index];
+            
+            if(charTxt == '*') {
+
+                if(isFirstStar) {
+                    textElement.innerHTML = textElement.innerHTML.slice(0, index) + '<strong>' + textElement.innerHTML.slice(index + 1);
+                } else {
+                    textElement.innerHTML = textElement.innerHTML.slice(0, index) + '</strong>' + textElement.innerHTML.slice(index + 1);
+                }
+
+                isFirstStar = !isFirstStar;
+            }
+        }
+    }
+
     el.querySelector('button').onclick = () => {
         el.remove();
-        popupParent.style.display = 'none';
+        if(popupParent.childNodes.length == 0) popupParent.style.display = 'none';
         setScrollLock(false);
+        scrollTo(oldScrollX, oldScrollY);
     }
 
     popupParent.appendChild( el );
@@ -120,3 +146,5 @@ function showPopup(text, infotype) {
     setScrollLock(true);
     scrollTo(0, 0);
 }
+
+electronAPI.setShowPopup(showPopup);

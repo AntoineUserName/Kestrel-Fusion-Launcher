@@ -3,5 +3,7 @@
     "user-preferences": {
         "background":null,
         "themes":[]
-    }
+    },
+    "fullscreen": false,
+    "firstTime": true
 }

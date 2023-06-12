@@ -15,10 +15,12 @@ function addMod(modinfo, isused) {
         <input type="checkbox" ${isused ? 'checked="true"' : '' }>
         <div class="input-skin"></div>
     </div>
+    <label></label>
     `;
 
     //<input type="checkbox" ${isused ? 'checked="true"' : '' }">
     el.querySelector('span').innerText = modinfo.name;
+    if(modinfo.author) el.querySelector('label').innerText = 'made by ' + modinfo.author;
 
     el.querySelector('input').onchange = () => {
         setIsActivatedMod( modinfo.name, el.querySelector('input').checked );

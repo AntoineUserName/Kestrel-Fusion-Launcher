@@ -13,6 +13,7 @@ try {
     configDatas = JSON.parse(
         fs.readFileSync( configFileLocation, {encoding: 'utf8'} )
     );
+    configDatas.notLoaded = null;
     
 } catch (error) {
     console.error(error);

@@ -1,4 +1,6 @@
 {
     "MAIN": 0,
-    "CHAR_EDITOR": 1
+    "CHAR_EDITOR": 1,
+    "LICENSE": 2,
+    "COPYRIGHTS": 3
 }
