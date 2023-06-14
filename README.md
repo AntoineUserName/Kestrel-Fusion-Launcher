@@ -34,7 +34,7 @@ Open the app and active the mod by the checkbox of the mod profile.
 
 # Create a mod
 
-All the necessary information is here :
+All the necessary informations is here :
 https://github.com/Kai-Denzel-Jane/LCU-SF-Docs/blob/main/KF-Launcher-Doc.md
 
 # How the launcher edit files ?
