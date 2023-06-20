@@ -1,0 +1,46 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: <title>"
+labels: ["bug"]
+assignees:
+  - AntoineUserName
+  - onrecc
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info? (not required up to you if you want)
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running?
+      options:
+        - V1.0.0
+        - V0.2.0 Beta
+        - V0.1.0 Beta
+    validations:
+      required: true
+  - type: textarea
+    id: mods
+    attributes:
+      label: Is this happening only with specific mods?
+      description: If so what mods?
+    validations:
+      required: false
