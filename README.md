@@ -1,9 +1,3 @@
-# Copyrights
-This project use icons from https://heroicons.com/ :
-
-Copyright (c) 2020 Refactoring UI Inc.
-
-
 # Installation
 
 1. You need to extract the game files (I can't explain here how to make it sorry).
@@ -40,3 +34,7 @@ https://github.com/Kai-Denzel-Jane/LCU-SF-Docs/blob/main/KF-Launcher-Doc.md
 # How the launcher edit files ?
 
 Each time the launcher edits a file it saves a backup of the file at "GAMEPATH/KF-Files/backup-files" and if you use the beta version the backup folder is at "LAUNCHERPATH/resources/app/backup-files".
+
+# Copyrights
+
+[See them here](./docs/COPYRIGHTS.md)
