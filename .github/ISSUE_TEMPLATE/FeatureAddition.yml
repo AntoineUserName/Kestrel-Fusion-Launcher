@@ -1,0 +1,39 @@
+name: Feature Suggestion
+description: Suggest a new feature
+title: "[ENH]: <title>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info? (not required)
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-will-it-add
+    attributes:
+      label: How will the new feature make the Launcher better?
+      description: Also how will the user experience become better?
+      placeholder: It will be better.
+    validations:
+      required: true
+  - type: textarea
+    id: will-it-work
+    attributes:
+      label: How would it work?
+      description: Descripe how the feature would be used and where would it go?
+    validations:
+      required: true
+  - type: textarea
+    id: anything-else
+    attributes:
+      label: Anything else?
+      description: If you have anything else to add do it here.
+    validations:
+      required: false
