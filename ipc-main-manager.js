@@ -276,6 +276,7 @@ ipcMain.on('updatingapp', () => {
 
     globalVars.mainWindow
     .webContents.on('dom-ready', () => {
-        globalVars.mainWindow.webContents.send( 'appLocU', globalVars.appLocationURL, path.join(path.dirname(globalVars.app.getPath('exe')), '../') );
+        // globalVars.mainWindow.webContents.send( 'appLocU', globalVars.appLocationURL, path.join(path.dirname(globalVars.app.getPath('exe')), '../') );
+        globalVars.mainWindow.webContents.send( 'appLocU', globalVars.appLocationURL, path.dirname(globalVars.app.getPath('exe')) );
     });
 });

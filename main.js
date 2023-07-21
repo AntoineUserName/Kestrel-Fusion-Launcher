@@ -25,7 +25,26 @@ if(config.firstTime) require("./first-time");
 
 console.log('modules loaded');
 
-
+// let oldErrrs = [];
+// process.on('uncaughtException', err => {
+//     console.error(err);
+//     if(globalVars.mainWindow) {
+//         globalVars.mainWindow.webContents.send('alert', err.stack + '');
+//     } else {
+//         oldErrrs.push(
+//             err
+//         )
+//     }
+// })
+// setInterval(() => {
+//     if(!globalVars.mainWindow) return;
+//     setTimeout(() => {
+//         oldErrrs.forEach(
+//             err => globalVars.mainWindow.webContents.send('alert', err.stack + '')
+//         )
+//         oldErrrs = [];
+//     }, 800);
+// }, 2000);
 
 let currentWindowType = windowTypes.MAIN;
 
@@ -85,7 +104,8 @@ function onWindowReloaded() {
     globalVars.mainWindow.webContents.send('version', config.version);
     
     // send the app location
-    globalVars.mainWindow.webContents.send('appLocation', globalVars.appLocationURL, path.join(path.dirname(globalVars.app.getPath('exe')), '../'), config['not-use-date']);
+    // globalVars.mainWindow.webContents.send('appLocation', globalVars.appLocationURL, path.join(path.dirname(globalVars.app.getPath('exe')), '../'), config['not-use-date']);
+    globalVars.mainWindow.webContents.send('appLocation', globalVars.appLocationURL, path.dirname(globalVars.app.getPath('exe')), config['not-use-date']);
 }
 
 
