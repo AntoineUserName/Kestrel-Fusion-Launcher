@@ -33,47 +33,58 @@ const characterClasses = {
     
     GENERIC: {
         id: 'generic',
-        cat: 0
+        cat: 0,
+        fileid: 'Police'
     },
     COP: {
         id: 'cop',
-        cat: 1
+        cat: 1,
+        fileid: 'Police'
     },
     ROBBER: {
         id: 'robber',
-        cat: 2
+        cat: 2,
+        fileid: 'Police'
     },
     MINER: {
         id: 'miner',
-        cat: 3
+        cat: 3,
+        fileid: 'Police'
     },
     ASTRONAUT: {
         id: 'astronaut',
-        cat: 4
+        cat: 4,
+        fileid: 'Space'
     },
     FARMER: {
         id: 'farmer',
-        cat: 5
+        cat: 5,
+        fileid: 'Police'
     },
     FIREMAN: {
         id: 'fireman',
-        cat: 6
+        cat: 6,
+        fileid: 'Police'
     },
     WORKER: {
         id: 'construction',
-        cat: 7
+        cat: 7,
+        fileid: 'Construction'
     },
     SPECIAL1: {
         id: 'special01',
-        cat: 8
+        cat: 8,
+        fileid: 'Police'
     },
     SPECIAL2: {
         id: 'special02',
-        cat: 9
+        cat: 9,
+        fileid: 'Police'
     },
     CIVILIAN_SERVICE: {
         id: 'service',
-        cat: 10
+        cat: 10,
+        fileid: 'Police'
     }
 }
 
@@ -157,7 +168,7 @@ function toCamecaseString(initstring, separator) {
 
 
 // Add character to the lists game files
-function addCharacter(customchar) {
+function addCharacter(customchar, canshowinfo) {
 
     customchar = toValidCustomCharObject(customchar);
 
@@ -167,7 +178,7 @@ function addCharacter(customchar) {
 
     addedCharList.push( customchar );
 
-    updateCharsListFile(true);
+    updateCharsListFile(canshowinfo);
 }
 
 

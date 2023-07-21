@@ -2,14 +2,7 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// ****** Load and check the config : ******
-console.log('loading config..');
 const config = require('./config-manager');
-
-// If this module found error in configuration files it stop the app
-console.log('checking config..');
-require('./check-config')(app);
-// *****************************************
 
 
 const globalVars = require('./global-variables');
@@ -25,7 +18,7 @@ const modManager = require('./mod-manager');
 const windowTypes = require('./window-types.json');
 require('./menu-builder'); // Create the menu
 require('./ipc-main-manager'); // Interactions main process <=> window process
-const memoryJS = require('memoryjs');
+let memoryJS;
 
 if(config.firstTime) require("./first-time");
 
@@ -91,6 +84,8 @@ function onWindowReloaded() {
     // Send the version of the app :
     globalVars.mainWindow.webContents.send('version', config.version);
     
+    // send the app location
+    globalVars.mainWindow.webContents.send('appLocation', globalVars.appLocationURL, path.join(path.dirname(globalVars.app.getPath('exe')), '../'), config['not-use-date']);
 }
 
 
@@ -131,6 +126,8 @@ const createWindow = (windowtypetoopen, cusompreload, isfullscreen) => {
             nodeIntegration: true
         }
     });
+    
+    globalVars.mainWindow.setIcon(path.join(__dirname, 'icon.ico'));
 
     currentWindowType = windowtypetoopen;
 
@@ -149,6 +146,14 @@ const createWindow = (windowtypetoopen, cusompreload, isfullscreen) => {
         
         case windowTypes.COPYRIGHTS:
             windowtypetoopen = `file://${globalVars.appLocationURL}/interface/license-and-copyrights/copyrights-page.html`;
+            break;
+        
+        case windowTypes.UPDATER:
+            windowtypetoopen = `file://${globalVars.appLocationURL}/interface/updater/updater.html`;
+            break;
+        
+        case windowTypes.SETTINGS_EDITOR:
+            windowtypetoopen = `file://${globalVars.appLocationURL}/interface/settings-editor/settings-editor.html`;
             break;
     }
 
@@ -194,6 +199,8 @@ app.on('window-all-closed', () => {
 setInterval(() => {
     
     try {
+
+        if(memoryJS == null) memoryJS = require('memoryjs');
         
         memoryJS.getProcesses((error, processes) => {
             if(error) {

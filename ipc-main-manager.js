@@ -126,10 +126,42 @@ ipcMain.on('launch', (event) => {
 
         console.log( pathExeFile );
         
-        childProcess.exec( JSON.stringify(pathExeFile) );
+        // childProcess.exec( JSON.stringify(pathExeFile) );
+        
         // childProcess.execFile( cmdToLaunchGame );
         
         // const gameProcess = childProcess.spawn(pathExeFile);
+        
+        if(config['open-in-cmd']) {
+            
+            let terminal = require('child_process').spawn(process.platform == 'linux' ? '/bin/sh' : process.env.ComSpec, {
+                shell: true,
+                // detached: true
+            });
+
+            terminal.stderr.on('data', (errbuffer) => {
+
+                if(typeof(errbuffer) != 'string') {
+                    
+                    if(errbuffer.toString) {
+                        errbuffer = errbuffer.toString('utf8');
+                    }
+                }
+
+                alertWindow('Error while launching the game :\n' + (typeof(errbuffer) == "string" ? errbuffer : 'Cannot translate error buffer'));
+            });
+
+            terminal.stdin.write(JSON.stringify(pathExeFile) + '\n');
+
+            setTimeout(() => {
+                console.log('removing terminal');
+                terminal.kill('SIGINT');
+            }, 1000);
+        } else {
+            childProcess.spawn(pathExeFile, {
+                detached: true,
+            });
+        }
 
         // gameProcess.stdout.on('data', (data) => {
         //     console.log('Output:', data.toString());
@@ -143,8 +175,18 @@ ipcMain.on('launch', (event) => {
         //     console.log('Child process exited with code:', code);
         // });
 
+        let launchedGameCount = 0;
+
         let checkGameLaunchedInt = setInterval(() => {
-            if(!globalVars.isGameLaunched) return;
+            if(!globalVars.isGameLaunched) {
+                launchedGameCount = 0;
+                return;
+            }
+
+            if(launchedGameCount < 200) {
+                launchedGameCount++;
+                return;
+            }
 
             clearInterval( checkGameLaunchedInt );
 
@@ -152,7 +194,13 @@ ipcMain.on('launch', (event) => {
             setTimeout(() => {
                 console.log('launching ' + cmdToRunAfter.length + ' scripts');
                 cmdToRunAfter.forEach(
-                    cmd => childProcess.exec( cmd )
+                    cmd => {
+                        if(typeof(cmd) == 'string') {
+                            childProcess.exec( cmd )
+                        } else {
+                            cmd();
+                        }
+                    }
                 );
 
                 cmdToRunAfter = [];
@@ -167,7 +215,7 @@ ipcMain.on('launch', (event) => {
 
                     globalVars.mainWindow.webContents.send('setStartButt', 'LAUNCH GAME');
                     unfreezePage();
-                }, 1000);
+                }, config['open-in-cmd'] ? 2000 : 1000);
 
             }, 5700);
             
@@ -191,4 +239,43 @@ ipcMain.on('setModIsActivated', (ev, modname, isactivated) => {
 
     unfreezePage();
 
+});
+
+
+// open the updater
+ipcMain.on('updatingapp', () => {
+
+    if(config.indev || config['not-update']) return; // dont update if the app is in dev
+
+    // when the app will be reloaded, the first-time.js will be called
+    config.firstTime = true;
+    config.save();
+
+    globalVars.createWindow(
+        require('./window-types.json').UPDATER,
+        'updater/preload-updater.js'
+    );
+
+    const {Menu, MenuItem} = require('electron');
+    
+    const newMenu = new Menu();
+
+    newMenu.append(
+        new MenuItem({
+            label: 'Updater',
+            submenu: [{
+            label: 'open devtool',
+            role: 'open devtool',
+            accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Control+Shift+I',
+            click: () => { globalVars.mainWindow.webContents.openDevTools(); }
+            }]
+        })
+    );
+
+    Menu.setApplicationMenu( newMenu );
+
+    globalVars.mainWindow
+    .webContents.on('dom-ready', () => {
+        globalVars.mainWindow.webContents.send( 'appLocU', globalVars.appLocationURL, path.join(path.dirname(globalVars.app.getPath('exe')), '../') );
+    });
 });

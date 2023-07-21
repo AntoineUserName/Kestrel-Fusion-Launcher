@@ -1,8 +1,8 @@
 {
   "name": "kestrel-fusion-launcher",
-  "version": "0.2.0",
+  "version": "1.1.0",
   "description": "",
-  "main": "main.js",
+  "main": "start.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,6 +12,7 @@
   "license": "",
   "dependencies": {
     "fs-extra": "^11.1.1",
-    "memoryjs": "^3.5.1"
+    "memoryjs": "^3.5.1",
+    "uaup-js": "^0.0.22"
   }
 }

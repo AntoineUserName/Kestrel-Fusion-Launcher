@@ -10,8 +10,6 @@ const path = require('path');
 const fs = require('fs');
 
 
-config.firstTime = undefined;
-config.save();
 
 backupManager.backupFile('/LEVELS/LEG' + 'O_CITY/L' + 'EG' + 'O_CITY/AI/SCRIPT.TXT');
 
@@ -29,10 +27,13 @@ modManager.getModsLoaded().forEach(
 );
 
 
-fs.writeFileSync(path.join(config['game-location'], 'CHARS/MINIFIGS/HATS/SUPER_CHARACTERS/KFEMPTYMODEL.GSC'), '');
+fs.writeFileSync(path.join(config['game-location'], 'CHARS/MINIFIGS/SUPER_CHARACTERS/HATS/KFEMPTYMODEL.GSC'), '');
 
 
 // For the audio :
 if(!fs.existsSync(path.join(config['game-location'], 'AUDIO/SAMPLES/MODS'))) fs.mkdirSync(path.join(config['game-location'], 'AUDIO/SAMPLES/MODS'));
 backupManager.backupFile('AUDIO/SAMPLES_DEFAULT.CFG');
 backupManager.backupFile('AUDIO/SAMPLES_JAPAN.CFG');
+
+config.firstTime = undefined;
+config.save();

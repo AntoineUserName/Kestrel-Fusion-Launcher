@@ -1,4 +1,4 @@
-const { CustomCharacter, addCharacter, charFolderId } = require("./character-manager");
+const { CustomCharacter, addCharacter, charFolderId, characterClasses } = require("./character-manager");
 const backupManager = require('../backup-manager');
 const fs = require('fs');
 const path = require("path");
@@ -161,7 +161,7 @@ function compileCustomCharObjectToModFiles(charobject, graphicDatas, resultfolde
 let initCharTXTDatas;
 let initCharCDDatas;
 
-function compileModFilesToGameFiles(charfolder) {
+function compileModFilesToGameFiles(charfolder, canshowinfo) {
 
     // put chars at CHARS/MINIFIGS/KF
     
@@ -186,6 +186,19 @@ function compileModFilesToGameFiles(charfolder) {
     charModInfo.attributes.push(
         'name ' + charModInfo.id
     );
+
+    if(typeof(charModInfo.class) == 'object') {
+        for (const key in characterClasses) {
+            
+            if(characterClasses[key] && characterClasses[key].id == charModInfo.class.id) {
+                charModInfo.class = characterClasses[key];
+                break;
+            }
+        }
+    } else {
+        charModInfo.class = characterClasses[charModInfo.class];
+    }
+
     
     charModInfo.attributes.forEach(
         attr => {
@@ -268,10 +281,24 @@ function compileModFilesToGameFiles(charfolder) {
 
     const charAssetsPath = path.join(charfolder, 'assets');
     const gameAssetsFolder = path.join(config["game-location"], 'CHARS/MINIFIGS/SUPER_CHARACTERS');
-    // // Si ca marche pas, tester en prenant un dir déjà existant
-
     // fs.mkdirSync(gameAssetsFolder, {recursive: true});
 
+
+    // change the class writed in the cd file :
+
+    const initCharClass = characterClasses.COP.fileid;
+
+    if(initCharClass.length >= charModInfo.class.fileid.length) {
+        replaceExistingValue('CLASS_' + initCharClass, 'CLASS_' + charModInfo.class.fileid);
+    }
+
+    // trying to edit the max length :
+
+    // cdCharDatas = cdCharDatas.slice(0, (7873 * 2)) +(
+    //     22 + charModInfo.class.fileid.length - initCharClass.length // The length of the string value
+    // )+ cdCharDatas.slice(7873 * 2 + 2);
+
+    // cdCharDatas = cdCharDatas.replace(toHexStr('CLASS_' + initCharClass), toHexStr('CLASS_' + charModInfo.class.fileid));
 
 
     // ************ Adding textures ************
@@ -431,9 +458,20 @@ function compileModFilesToGameFiles(charfolder) {
         replaceExistingValue('FACE_STORY_DOORLOCKHOMES', `FACE_${charModInfo.id}_SKIMASK`);
         // replaceExistingValue('FACE_STORY_DOORLOCKHOMES', `FACE_${charModInfo.id}`);
 
+        // ATTENTION :
+        // SI LE HATID EST TROP GRAND CELA VA RENDRE LE .CD INUTILISABLE
         
-        // Add the hat :
-        if(charModInfo.hatid && typeof(charModInfo.hatid) == 'string') {
+
+        // Add the hat / the hairs :
+        if(charModInfo.hairid && typeof(charModInfo.hairid) == 'string') {
+            // Set the hat 2 times :
+            replaceExistingValue('Hats\\HAT_DEERSTALKER', 'Hairs\\HAIR_' + charModInfo.hairid);
+            replaceExistingValue('HAT_DEERSTALKER', 'HAIR_' + charModInfo.hairid);
+            
+            replaceExistingValue('Hats\\HAT_DEERSTALKER', 'Hairs\\HAIR_' + charModInfo.hairid);
+            replaceExistingValue('HAT_DEERSTALKER', 'HAIR_' + charModInfo.hairid);
+        }
+        else if(charModInfo.hatid && typeof(charModInfo.hatid) == 'string') {
             // Set the hat 2 times :
             replaceExistingValue('Hats\\HAT_DEERSTALKER', 'Hats\\HAT_' + charModInfo.hatid);
             replaceExistingValue('HAT_DEERSTALKER', 'HAT_' + charModInfo.hatid);
@@ -485,7 +523,7 @@ function compileModFilesToGameFiles(charfolder) {
     // }
 
     // Update the character list
-    addCharacter( {...charModInfo} );
+    addCharacter( {...charModInfo}, canshowinfo );
 }
 
 

@@ -1,0 +1,217 @@
+Character me(GetCharacter());
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+Global CityArray playersInPursuit;
+
+Number distanceForKillNPC(11);
+//Number fleeSpeed( 4.5 );
+Number fleeSpeed( 0.1 );
+
+
+Number totalTickC(1);
+
+Character lastPlayerFocus;
+
+State Base ()
+{
+	Conditions
+	{
+
+		// To optimise the ai :
+		totalTickC = totalTickC - 1;
+
+		if(totalTickC <= 0) {
+
+			totalTickC = 6;
+
+			if(!me) {
+
+				wait(1.5);
+				
+				if(!me) {
+					goto charEnd();
+				}
+			}
+
+			
+			Character playerToAttack;
+
+			if(playersInPursuit.Size() == 0) {
+				if(lastPlayerFocus) {
+
+					if(lastPlayerFocus.DistanceTo(me) > 8) {
+						goto stopAndFlee();
+					} else {
+						playerToAttack = lastPlayerFocus;
+					}
+				} else {
+					goto stopAndFlee();
+				}
+			}
+
+			if(!playerToAttack) { // new
+				playerToAttack = playersInPursuit.Get(0);
+
+				Number indexC(1);
+				Number distanceFromC(0);
+				distanceFromC = me.DistanceTo(playerToAttack);
+
+				while(indexC < playersInPursuit.Size()) {
+
+					Character otherChar;
+					otherChar = playersInPursuit.Get(indexC);
+					
+					if( me.DistanceTo(otherChar) < distanceFromC ) {
+
+						playerToAttack = otherChar;
+						
+						distanceFromC = me.DistanceTo(playerToAttack);
+					}
+					indexC = indexC + 1;
+				};
+			}
+
+
+			if(playerToAttack.GetVehicle()) {
+				
+				if(!me.GetVehicle()) {
+					wait(2);
+					
+					if(!me) {
+						goto charEnd();
+					}
+
+					if(playerToAttack && playerToAttack.GetVehicle()) {
+						
+						//me.Stop();
+						me.Flee( playerToAttack );
+
+						wait(3);
+
+						if(!me) {
+							goto charEnd();
+						}
+
+						if(playerToAttack && playerToAttack.GetVehicle()) {
+							goto stopAndFlee();
+						}
+						
+					}
+				} else {
+					if(lastPlayerFocus != playerToAttack) {
+						lastPlayerFocus = playerToAttack;
+        				me.Pursue(playerToAttack, 15, #IGNORETRAFFICLIGHTS);
+					}
+				}
+				
+			} else {
+				
+				if(me.GetVehicle()) {
+
+					// If is in vehicle and the player is close to this char and the player haven't a car, exit the vehicle
+					if(me.DistanceToXZ(playerToAttack) < 1.85) {
+
+						exitMyVehicle();
+
+						if(me && playerToAttack) {
+							me.Attack(playerToAttack);
+						}
+					}
+
+				} else {
+					
+					if(me.DistanceToXZ(playerToAttack) > 35) {
+						goto stopAndFlee();
+					}
+
+					if(lastPlayerFocus != playerToAttack) {
+						lastPlayerFocus = playerToAttack;
+        				me.Attack(playerToAttack);
+					}
+				}
+			}
+		}
+	};
+	Actions
+	{
+ 	};
+};
+
+
+Function exitMyVehicle() {
+
+	if(me && me.GetVehicle()) {
+
+		Vehicle oldVehicle( me.GetVehicle() );
+							
+		//me.ExitVehicle();
+		me.ClearVehicle(); // ExitVehicle remove the character
+		//wait(0.89);
+		wait(0.2);
+		
+		oldVehicle.Destroy();
+	}
+}
+
+
+State stopAndFlee ()
+{
+	Conditions
+	{
+		if(!me) {
+			goto charEnd();
+		}
+
+		//J'AI MI LE OnScreen
+
+		if(!me.OnScreen() && me.DistanceTo(cPlayer1) > distanceForKillNPC) {
+		//if(me.DistanceTo(cPlayer1) > distanceForKillNPC) {
+
+			if(!cPlayer2 || me.DistanceTo(cPlayer2) > distanceForKillNPC) {
+				goto charEnd();
+			}
+		}
+	};
+	Actions
+	{
+		//me.Stop();
+		
+		//if(me.GetVehicle()) {
+			//me.ExitVehicle();
+			//wait(0.8);
+		//}
+		exitMyVehicle();
+
+		me.Flee( cPlayer1 );
+		//me.Release();
+	};
+};
+
+State charEnd ()
+{
+	Conditions
+	{};
+	Actions
+	{
+		if(me) {
+			
+			if(me.GetVehicle()) {
+				Vehicle npcV (me.GetVehicle());
+				me.ClearVehicle();
+				wait(0.5);
+				if(npcV) {
+					npcV.Destroy();
+				}
+				wait(0.5);
+			}
+			
+			if(me) {
+				me.Kill();
+			}
+		}
+	};
+};
+
+
+Base();

@@ -52,7 +52,7 @@ function addGraphicInput(inputdatas) {
             }
             if(assetfilename == null) {
                 assetfilename = '';
-                checkboxHasFile.checked = false;
+                checkboxHasFile.checked = isImportant == false;
                 graphicInputD.added = isImportant == false;
                 el.innerText = 'Add file';
             } else {

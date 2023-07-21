@@ -37,4 +37,6 @@ Each time the launcher edits a file it saves a backup of the file at "GAMEPATH/K
 
 # Copyrights
 
-[See them here](./docs/COPYRIGHTS.md)
+This project use icons from https://heroicons.com/ :
+
+Copyright (c) 2020 Refactoring UI Inc.

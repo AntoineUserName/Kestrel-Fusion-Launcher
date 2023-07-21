@@ -3,7 +3,7 @@ let isPageFrozen = false;
 function setIsPageFrozen(isfrozen) {
     isPageFrozen = isfrozen == true; // be sure that its a boolean
 
-    freezePageElement.style.height = document.body.offsetHeight + 370 + 'px';
+    // freezePageElement.style.height = document.body.offsetHeight + 370 + 'px';
     
     freezePageElement.style.display = isfrozen ? '' : 'none';
 }
@@ -53,18 +53,22 @@ function isOkTo(text, after) {
     <button class="classic-button" style="margin: 5px;">Yes</button>
     `;
 
+    function removePopupParent() {
+        if(popupParent.innerHTML != '') return;
+        popupParent.style.display = 'none';
+        setScrollLock(false);
+    }
+
     el.querySelector('p').innerText = text;
     el.querySelector('button').onclick = () => {
         el.remove();
-        popupParent.style.display = 'none';
+        removePopupParent();
         after( false );
-        setScrollLock(false);
     }
     el.querySelectorAll('button')[1].onclick = () => {
         el.remove();
-        popupParent.style.display = 'none';
+        removePopupParent();
         after( true );
-        setScrollLock(false);
     }
 
     popupParent.appendChild( el );

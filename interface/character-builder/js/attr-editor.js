@@ -163,7 +163,7 @@ electronAPI.onInit((charobj, charTypesList) => {
         type: 'text',
         value: charDatas.id,
         onchange: (el) => {
-            el.value = el.value.replace(/ /g, '_').replace(/[^0-9a-zA-Z]+/g, '').toUpperCase().slice(0, 5); // The limit is 5 letters
+            el.value = el.value.replace(/ /g, '_').replace(/[^0-9a-zA-Z-_]+/g, '').toUpperCase().slice(0, 5); // The limit is 5 letters
             charDatas.id = el.value;
         }
     });

@@ -4,7 +4,7 @@ const fsExtra = require('fs-extra');
 const config = require('./config-manager');
 const backupManager = require('./backup-manager');
 const globalVars = require('./global-variables');
-const { exec } = require('child_process');
+const child_process = require('child_process');
 
 // const modsFolder = path.join(__dirname, '/mods');
 const modsFolder = path.join(globalVars.KFFolderPath, '/mods');
@@ -78,7 +78,7 @@ function loadAllMods() {
         }
     );
 
-    if(!config['not-use-date']) console.log('mods loaded in ' + (new Date().getTime() - timeBeforeLoadingMods));
+    if(!config['not-use-date']) console.log('mods loaded in ' + (new Date().getTime() - timeBeforeLoadingMods) + 'ms');
 
     return haveModNotLoaded;
 }
@@ -106,10 +106,10 @@ function setModIsActivated(modname, isactivated) {
 
         if(isactivated) {
             fs.readdirSync(charsFolderPath).forEach(
-                charfoldername => {
+                (charfoldername, charFolderIndex, charFolderArr) => {
 
                     console.log(`loading "${charfoldername}"..`);
-                    charFileManager.loadCharMod( path.join(charsFolderPath, charfoldername) );
+                    charFileManager.loadCharMod( path.join(charsFolderPath, charfoldername), charFolderIndex == charFolderArr.length-1 );
                     console.log(`"${charfoldername}" loaded`);
 
                 }
@@ -138,7 +138,7 @@ function setModIsActivated(modname, isactivated) {
                 const modV = parseInt(modsLoaded[modToChange]['launcher-version'].replace(/\./g, ''));
 
                 if(parseInt(exports.launcherVersion.replace(/\./g, '')) < modV) {
-                    mainWindow.webContents.send('alert', `WARN :\nthe mod "${modname}" isn't build for this launcher version.\nYou can having bugs if you use it.\nIts recommanded to update your launcher at the last version.`, null);
+                    globalVars.mainWindow.webContents.send('alert', `WARN :\nthe mod "${modname}" isn't build for this launcher version.\nYou can having bugs if you use it.\nIts recommanded to update your launcher at the last version.`, null);
                 }
             }
 
@@ -267,6 +267,14 @@ function launchMods() {
     ];
 
 
+    let customEnvForForkedJSModules = {...process.env};
+    customEnvForForkedJSModules.MODINFOS = JSON.stringify({
+        gamePath: config['game-location'],
+        exeGameName: config.exename,
+        modulesLocation: path.join(__dirname, 'node_modules')
+    });
+
+
     // Apply changes by the mods (SF files, bat, js and python codes) :
     config['activated-mods'].forEach(modname => {
         
@@ -325,7 +333,7 @@ function launchMods() {
                         return;
                     }
 
-                    exec(JSON.stringify(
+                    child_process.exec(JSON.stringify(
                         path.join(dirModP, filename)
                     ));
                 }
@@ -342,15 +350,32 @@ function launchMods() {
                     if(path.extname(filename).toLowerCase() != ".js") return;
 
                     
-                    // If the script will be launched after
                     if(filename.startsWith('_')) {
+
                         codeToLaunchAfter.push(
-                            "node " + JSON.stringify(path.join(dirModP, filename))
+                            () => {
+                                child_process.fork(path.join(dirModP, filename), {
+                                    env: customEnvForForkedJSModules
+                                });
+                            }
                         );
+
                         return;
                     }
 
-                    exec("node " + JSON.stringify(path.join(dirModP, filename)));
+                    child_process.fork(path.join(dirModP, filename), {
+                        env: customEnvForForkedJSModules
+                    });
+                    
+                    // // If the script will be launched after
+                    // if(filename.startsWith('_')) {
+                    //     codeToLaunchAfter.push(
+                    //         "node " + JSON.stringify(path.join(dirModP, filename))
+                    //     );
+                    //     return;
+                    // }
+
+                    // exec("node " + JSON.stringify(path.join(dirModP, filename)));
 
                 }
             )
@@ -373,7 +398,7 @@ function launchMods() {
                         return;
                     }
 
-                    exec("python " + JSON.stringify(path.join(dirModP, filename)));
+                    child_process.exec("python " + JSON.stringify(path.join(dirModP, filename)));
                 }
             )
         }
@@ -622,6 +647,8 @@ function updateCSVTexts(cansaveconfig) {
 
     let textToAddInTextList = '';
 
+    let textsReplacers = [];
+
 
     config['activated-mods'].forEach(modname => {
         
@@ -637,7 +664,22 @@ function updateCSVTexts(cansaveconfig) {
 
                     if(path.extname(filename).toLowerCase() != ".txt" && path.extname(filename).toLowerCase() != ".csv") return;
                     
-                    textToAddInTextList += '\n' + fs.readFileSync(path.join(dirModP, filename), {encoding: 'utf8'});
+                    if(filename.startsWith('_')) {
+
+                        fs.readFileSync(path.join(dirModP, filename), {encoding: 'utf8'}).split('\n').forEach(
+                            line => {
+
+                                if(line && line.startsWith('//') == false) {
+
+                                    textsReplacers.push({
+                                        r: line.slice(0, line.indexOf('",')),
+                                        v: line
+                                    });
+                                }
+                        });
+                    } else {
+                        textToAddInTextList += '\n' + fs.readFileSync(path.join(dirModP, filename), {encoding: 'utf8'});
+                    }
                 }
             );
         }
@@ -651,7 +693,24 @@ function updateCSVTexts(cansaveconfig) {
     backupManager.loadBackupFile(
         '/STUFF/TEXT/TEXT.CSV',
         backupToLoad => {
-            return backupToLoad.toString('utf8') + textToAddInTextList;
+            let newTextList = backupToLoad.toString('utf8');
+
+            if(textsReplacers.length != 0) {
+                newTextList.split('\n').forEach(
+                    line => {
+
+                        let lineId = line.slice(0, line.indexOf('",'));
+
+                        let lineReplacer = textsReplacers.find(t => t.r == lineId);
+
+                        if(!lineReplacer) return;
+
+                        newTextList = newTextList.replace(line, lineReplacer.v);
+                    }
+                );
+            }
+
+            return newTextList + textToAddInTextList;
         },
         {
             init: {encoding: 'utf8'},

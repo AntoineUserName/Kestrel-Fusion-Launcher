@@ -1,0 +1,9 @@
+{
+    "secondsToWaitBeforeCheckUpdate": 10800,
+
+    "gitRepo": "Kestrel-Fusion-Launcher",
+    "gitUsername": "AntoineUserName",
+
+    "appName": "kestrel-fusion-launcher-win32-x64",
+    "appExecutableName": "kestrel-fusion-launcher.exe"
+}

@@ -2,5 +2,7 @@
     "MAIN": 0,
     "CHAR_EDITOR": 1,
     "LICENSE": 2,
-    "COPYRIGHTS": 3
+    "COPYRIGHTS": 3,
+    "UPDATER": 4,
+    "SETTINGS_EDITOR": 5
 }

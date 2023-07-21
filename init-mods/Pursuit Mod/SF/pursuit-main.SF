@@ -1,0 +1,580 @@
+
+// Prison positions when the player is arrested
+Position prisonPos1(-0.14948497712612152, 5.308820724487305, -326.6274108886719);
+Position prisonPos2(-2.967561960220337, 5.531733512878418, -333.45220947265625);
+Position prisonPos3(10.34427547454834, 5.698983192443848, -344.6240234375);
+
+// cop car when you have some stars :
+Text ennemyVehicle1("Hero");
+Text ennemyVehicle2("Squaddie");
+Text ennemyVehicle3("Trooper");
+
+// cop boats when you have some stars :
+Text ennemyBoat1("Cetacea");
+//Text ennemyBoat1("Ferry");
+Text ennemyBoat2("Liberty");
+Text ennemyBoat3("Cetacea");
+
+// cop character ids :
+Text npcName1("CopA");
+Text npcName2("CopB");
+Text npcName3("CopC");
+
+
+// when you have a lot of stars :
+// Text ennemyLTVehicle1("Hero");
+// Text ennemyLTVehicle2("Squaddie");
+// Text ennemyLTVehicle3("Trooper");
+
+// Text npcLTName1("CopA");
+// Text npcLTName2("CopB");
+// Text npcLTName3("CopC");
+
+// The minimum stars required to be attacked
+Number minStarsToBeAttck(1);
+
+// PLUS TARD The minimum stars required to be attacked by op cops
+// Number minStarsToBeAttckHarder(11);
+
+
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+Global CityArray playersInPursuit( CityArray_Create("Character") );
+
+
+WorldLevel wlCity("Lego_City");
+
+Position playerPos;
+Bool isInNavalVehicle( false );
+Character playerChoose( cPlayer1 );
+
+
+Number player1Stars(0);
+Number player2Stars(0);
+
+
+Bool haveRegEventP1( false );
+Bool haveRegEventP2( false );
+
+CityArray carEnnemies;
+
+Bool canAddStarByCollingCar( true );
+
+Bool canGetDamageP1( true );
+Bool canGetDamageP2( true );
+
+
+
+State Base() {
+
+    Conditions
+    {
+    };
+    Actions
+    {
+        While( wlCity.IsLoaded() == false || SafeToInterruptGameplay() == false ) {
+            wait(1);
+        };
+        
+        wait(4);
+        PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+        wait(2);
+
+        initModFuncs();
+
+        While(true) {
+            loopStarsMain();
+
+            wait(2);
+        };
+    };
+}
+
+Function loopStarsMain () {
+
+    if( player1Stars > minStarsToBeAttck && cPlayer1.InContext("DeathContext") ) {
+        onArrestedPlayer(true);
+    }
+    
+    if(cPlayer2) {
+        if( player2Stars > minStarsToBeAttck && cPlayer2.InContext("DeathContext") ) {
+            onArrestedPlayer(false);
+        }
+    }
+
+    // updateStarBar();
+
+    // Switch focused player
+    if(playerChoose == cPlayer1) {
+        
+        playerChoose = cPlayer2;
+
+        if(cPlayer2) {
+            if(player2Stars < minStarsToBeAttck) {
+                removeFromArray( playersInPursuit, playerChoose );
+                return;
+            }
+        } else {
+            removeFromArray( playersInPursuit, playerChoose );
+            return;
+        }
+        
+        
+        if(playerChoose.GetVehicle()) {
+            if(haveRegEventP2 == false) {
+                haveRegEventP2 = true;
+                onPlayerEnterVehiclePTwo();
+            }
+        } else {
+            haveRegEventP2 = false;
+        }
+    } else {
+        playerChoose = cPlayer1;
+
+        if(player1Stars < minStarsToBeAttck) {
+            removeFromArray( playersInPursuit, playerChoose );
+            return;
+        }
+
+        if(playerChoose.GetVehicle()) {
+            if(haveRegEventP1 == false) {
+                haveRegEventP1 = true;
+                onPlayerEnterVehiclePOne();
+            }
+        } else {
+            haveRegEventP1 = false;
+        }
+    }
+
+    // If the player have not stars this part of the code is not executed :
+
+    Number indexC(0);
+
+    While(indexC != -1 && indexC < playersInPursuit.Size()) {
+        if(playersInPursuit.Get(indexC) != playerChoose) {
+            indexC = indexC + 1;
+        } else {
+            indexC = -1;
+        }
+    }
+
+    if(indexC != -1) {
+        playersInPursuit.Add(playerChoose);
+    }
+
+
+    playerPos = playerChoose.GetPosition();
+    
+    // If is in a vehicle spawn cop in vehicle else spawn cop that go to the player
+    if(playerChoose.GetVehicle()) {
+
+        Vehicle playerVN( playerChoose.GetVehicle() );
+
+        if(playerVN.GetCategory() == "Naval" || playerVN.GetClass() == "Naval") {
+            isInNavalVehicle = true;
+        } else {
+            isInNavalVehicle = false;
+        }
+
+        // playerChoose.GetVehicle().SetMassMul(0.1);
+
+        spawnEnnemyCar();
+        wait(0.2);
+    } else {
+
+        isInNavalVehicle = false;
+
+        spawnAttackingEnnemy();
+    }
+
+    if(playerChoose == cPlayer1) {
+        player1Stars = player1Stars - 0.1;
+    } else {
+        player2Stars = player2Stars - 0.1;
+    }
+
+}
+
+
+Function removeFromArray( CityArray listtoedit, Character valueToRemove ) {
+    
+    Number indexC(0);
+
+    While(indexC < listtoedit.Size()) {
+        if(listtoedit.Get(indexC) == valueToRemove) {
+            listtoedit.Remove(indexC);
+            return;
+        } else {
+            indexC = indexC + 1;
+        }
+    }
+}
+
+
+
+
+Function onArrestedPlayer ( Bool isFirstPlyrTp ) {
+
+    if(isFirstPlyrTp) {
+        player1Stars = 0;
+    } else {
+        player2Stars = 0;
+    }
+
+
+
+    FadeScreen(true);
+
+    wait(1);
+
+    
+    // if(isFirstPlyrTp) {
+    //     cPlayer1.SetInvulnerable(true);
+    // } else {
+    //     cPlayer2.SetInvulnerable(true);
+    // }
+
+
+    WorldLevel worldPrison( "IS_Prison_Island_1525" );
+    worldPrison.ForceLoad(true);
+    While(worldPrison.IsLoaded() == false) {};
+    wait(1.2);
+
+    Position prisonPosP;
+
+    Number prisonPosRandomId( RandomInt(0, 2) );
+
+    prisonPosP = prisonPos1;
+    if(prisonPosRandomId == 0) {
+        prisonPosP = prisonPos1;
+    }
+    if(prisonPosRandomId == 1) {
+        prisonPosP = prisonPos2;
+    }
+    if(prisonPosRandomId == 2) {
+        prisonPosP = prisonPos3;
+    }
+
+    if(isFirstPlyrTp) {
+        //cPlayer1.Teleport(prisonPosP.GetPosition(), 0);
+        
+        cPlayer1.Teleport(prisonPosP, 0);
+    } else {
+        //cPlayer2.Teleport(prisonPosP.GetPosition(), 0);
+
+        cPlayer2.Teleport(prisonPosP, 0);
+    }
+
+
+    wait(2);
+
+    //if(isFirstPlyrTp) {
+    //    cPlayer1.SetInvulnerable(false);
+    //} else {
+    //    cPlayer2.SetInvulnerable(false);
+    //}
+
+    wait(3);
+
+    worldPrison.ForceLoad(false);
+
+    FadeScreen(false);
+
+}
+
+
+Function getRandomCopID () returns Text
+{
+    Number npcRandomNameId( RandomInt(0, 3) );
+
+    Text npcAttackingName( npcName1 );
+    if(npcRandomNameId == 0) {
+        npcAttackingName = npcName1;
+    }
+    if(npcRandomNameId == 1) {
+        npcAttackingName = npcName2;
+    }
+    if(npcRandomNameId == 2) {
+        npcAttackingName = npcName3;
+    }
+    if(npcRandomNameId == 3) {
+        npcAttackingName = npcName1;
+    }
+
+    return npcAttackingName;
+}
+
+Function addStarsTo ( Bool isFirstPlyrS, Number starsToAdd ) {
+    if(isFirstPlyrS) {
+        player1Stars = player1Stars + starsToAdd;
+    } else {
+        if(cPlayer2) {
+            player2Stars = player2Stars + starsToAdd;
+        }
+    }
+}
+
+
+Function onPlayerHitKrawlie (Character mplayer) {
+
+    if(mplayer == cPlayer1.GetVehicle() || mplayer == cPlayer1) {
+        addStarsTo(true, 0.3);
+    } else {
+        addStarsTo(false, 0.3);
+    }
+}
+
+
+Function onPlayerHitTraff ( Character playerAttcker ) {
+
+    wait(1);
+    if(playerAttcker == cPlayer1 || playerAttcker == cPlayer1.GetVehicle()) {
+        addStarsTo(true, 0.8);
+    } else {
+        addStarsTo(false, 0.8);
+    }
+
+}
+
+
+Function onPlayerJackVehicle ( Character jackPlayer ) {
+
+    wait(1);
+
+    if(jackPlayer == cPlayer1.GetVehicle()) {
+        addStarsTo(true, 1.2);
+    } else {
+        addStarsTo(false, 1.2);
+    }
+}
+
+
+Function initModFuncs() {
+
+	DisablePoliceCars(true);
+
+    
+    RegisterEvent("PlayerJackedVehicle", "onPlayerJackVehicle");
+
+    // Add star if he attack pedestrians
+    RegisterEvent("PlayerVehicleHitTraffic", "onPlayerHitTraff");
+    RegisterEvent("PlayerVehicleHitKrawlie", "onPlayerHitKrawlie");
+    
+    
+	// RegisterEvent("PlayerVehicleHitProp", "onPlayerHitKrawlie"); test laaaater
+
+    // Give damages when hit ennemies car
+    RegisterEvent("PlayerVehicleAndAIVehicleCollision",	"onPlayerVehicleHit");
+
+    carEnnemies = CityArray_Create("Vehicle");
+
+	// PlayActionMusic(true);
+
+}
+
+
+Function spawnEnnemyCar() {
+
+    Position carPos( playerPos.GetX() + RandomFloat(-6, 6), playerPos.GetY() + RandomFloat(7, 9), playerPos.GetZ() + RandomFloat(-6, 6) );
+
+    Number idVehicleType( RandomInt(0, 3) );
+
+    Text vehiclePursuitType( ennemyVehicle1 );
+    if(idVehicleType == 0) {
+        if(isInNavalVehicle) {
+            vehiclePursuitType = ennemyBoat1;
+        } else {
+            vehiclePursuitType = ennemyVehicle1;
+        }
+    }
+    if(idVehicleType == 1) {
+        if(isInNavalVehicle) {
+            vehiclePursuitType = ennemyBoat2;
+        } else {
+            vehiclePursuitType = ennemyVehicle2;
+        }
+    }
+    if(idVehicleType == 2) {
+        if(isInNavalVehicle) {
+            vehiclePursuitType = ennemyBoat3;
+        } else {
+            vehiclePursuitType = ennemyVehicle3;
+        }
+    }
+    if(idVehicleType == 3) {
+        if(isInNavalVehicle) {
+            vehiclePursuitType = ennemyBoat1;
+        } else {
+            vehiclePursuitType = ennemyVehicle1;
+        }
+    }
+
+    Character ennemy;
+    Vehicle ennemyCar;
+    
+    if(isInNavalVehicle) {
+        ennemyCar = CreateAiVehicle(vehiclePursuitType, "Naval", carPos, 0);
+    } else {
+        ennemyCar = CreateAiVehicle(vehiclePursuitType, "Enforcer", carPos, 0);
+    }
+
+    ennemy = CreateAiCharacter(getRandomCopID(), "Enforcer", carPos, 0);
+
+    wait(0.2);
+
+    ennemy.EnterVehicle( ennemyCar, #DRIVER );
+
+    //ennemyCar.CreateKrawlieDriver(getRandomCopID(), "Enforcer");
+    
+    wait(0.82);
+    
+    //ennemy = ennemyCar.GetDriver();
+
+    if(ennemy.GetVehicle() && ennemyCar) {
+        
+        //ennemyCar.ForceMaxDetail(true);
+        //ennemyCar.SetMassMul(#Pursuit);
+        
+		// ennemy.SetWaypointDriveSpeed(playerChoose.GetPosition(), 15);
+		
+        // ennemy.Pursue(playerChoose, 15, #MATCHSPEED, #IGNORETRAFFICLIGHTS);
+        //ennemy.Pursue(playerChoose, 15, #IGNORETRAFFICLIGHTS);
+        
+        // ennemy.SetDriveSpeed(10);
+        // ennemy.SetDriveToBoost(0.25);
+        
+		// cTarget.MoveToSetSpeed(nCurrentSpeed, #FORCEFLATPACE);
+        
+        // ennemyCar.DriverlessPursue(playerChoose, 20);
+
+        carEnnemies.Add( ennemyCar );
+
+
+        // Remove from the ennemy cars list the cars that are destroyed :
+
+        Number indexC(0);
+
+        While(indexC < carEnnemies.Size()) {
+            if(carEnnemies.Get(indexC)) {
+                indexC = indexC + 1;
+            } else {
+                carEnnemies.Remove(indexC);
+            }
+        }
+
+        ennemy.SetScript("MOD_PURSUITAI");
+
+    } else {
+
+        if(ennemy) {
+            ennemy.Kill();
+        }
+        if(ennemyCar) {
+            ennemyCar.Destroy();
+        }
+    }
+
+}
+
+
+Function spawnAttackingEnnemy () {
+
+    Position npcPos( playerPos.GetX() + RandomFloat(-6, 6), playerPos.GetY() + RandomFloat(0, 1), playerPos.GetZ() + RandomFloat(-6, 6) );
+
+
+    Character ennemy;
+    
+    ennemy = CreateAiCharacter(getRandomCopID(), "Enforcer", npcPos, 0);
+
+    ennemy.SetScript("MOD_PURSUITAI");
+
+    wait(0.8);
+}
+
+// this function is useless :
+Function onPlayerEnterVehiclePOne () {
+    if(cPlayer1.GetVehicle()) {
+        PrintToScreen("Hello World");
+        // Remove health if he touch ennemy cars
+        // RegisterEvent("GameObjectObjHitObj", "onVehiclHitObjPOne", cPlayer1.GetVehicle() );
+    }
+}
+
+Function onPlayerEnterVehiclePTwo () {
+    if(cPlayer2 && cPlayer2.GetVehicle()) {
+        PrintToScreen("Hello World");
+        // Remove health if he touch ennemy cars
+        // RegisterEvent("GameObjectObjHitObj", "onVehicleHitObjPTwo", cPlayer2.GetVehicle() );
+    }
+};
+
+
+Function isEnnemyCar( Vehicle car ) returns Bool
+{
+    Number indexC(0);
+
+    While(indexC < carEnnemies.Size()) {
+        if(carEnnemies.Get(indexC) == car) {
+            indexC = carEnnemies.Size();
+            return true;
+        }
+        indexC = indexC + 1;
+    }
+
+    return false;
+};
+
+
+Function onPlayerVehicleHit ( Vehicle playerVehicle, Vehicle otherVehicle ) {
+
+//    if( isEnnemyCar(otherVehicle) ) {
+//        return;
+//    }
+
+//    PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+
+    if(otherVehicle && otherVehicle.GetDriver()) {
+
+        if( isEnnemyCar(otherVehicle) ) {
+
+            Bool isFirstPlyr( cPlayer1.GetVehicle() == playerVehicle );
+
+            if(isFirstPlyr) {
+
+                if(canGetDamageP1 == false) {
+                    return;
+                }
+                canGetDamageP1 = false;
+            } else {
+                
+                if(canGetDamageP2 == false) {
+                    return;
+                }
+                canGetDamageP2 = false;
+            }
+
+            Number newPlayerCarHP( playerVehicle.GetHealth(#Current) - 1 );
+
+            if(newPlayerCarHP == 0 || newPlayerCarHP < 0) {
+                playerVehicle.Destroy();
+            } else {
+                playerVehicle.SetHealth(#Set, newPlayerCarHP);
+            }
+
+            
+            wait(0.5);
+            if(isFirstPlyr) {
+                canGetDamageP1 = true;
+            } else {
+                canGetDamageP2 = true;
+            }
+
+        }
+    }
+};
+
+
+
+
+Base();

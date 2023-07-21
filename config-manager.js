@@ -1,5 +1,5 @@
 const configFileLocation = './config.json';
-const gameLocationFile = './game-location.txt';
+// const gameLocationFile = './game-location.txt';
 //const gameVersionFile = './version.txt';
 
 const fs = require('fs');
@@ -21,18 +21,23 @@ try {
 }
 
 
-// Load the game path :
-if(configDatas.notLoaded == null) {
+// // Load the game path :
+// if(configDatas.notLoaded == null) {
     
-    try {
-        // Load game location file :
-        configDatas['game-location'] = fs.readFileSync( gameLocationFile, {encoding: 'utf8'} ).replace(/\n/gs, '');
+//     try {
+//         // Load game location file :
+//         configDatas['game-location'] = fs.readFileSync( gameLocationFile, {encoding: 'utf8'} ).replace(/\n/gs, '');
 
-    } catch (error) {
-        console.error(error);
+//     } catch (error) {
+//         console.error(error);
         
-        configDatas.notLoaded = 1;
-    }
+//         configDatas.notLoaded = 1;
+//     }
+// }
+
+if(configDatas.notLoaded == null) {
+
+    if(!fs.existsSync(configDatas['game-location'])) configDatas.notLoaded = 1;
 }
 
 

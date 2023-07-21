@@ -23,6 +23,7 @@ const template = [
             },
             {
                 label: 'open devtool',
+                accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Control+Shift+I',
                 click: () => {
                     globalVars.mainWindow.webContents.openDevTools();
                 }
@@ -37,8 +38,31 @@ const template = [
     },
 
     {
-        label: 'params',
+        label: 'settings',
         submenu: [
+            {
+                label: 'edit',
+                click: () => {
+                    
+                    globalVars.createWindow(
+                        require('./window-types.json').SETTINGS_EDITOR,
+                        'settings-editor/preload-settings-editor.js'
+                    );
+
+                    require('./interface/settings-editor/ipc-settings-editor');
+
+                    let newConfigM = {};
+
+                    for (const key in config) {
+                        if(typeof(config[key]) != 'function') newConfigM[key] = config[key];
+                    }
+                    
+                    globalVars.mainWindow
+                    .webContents.on('dom-ready', () => {
+                        globalVars.mainWindow.webContents.send('configManager', newConfigM);
+                    });
+                }
+            },
             {
                 label: 'background',
                 click: () => {
@@ -81,12 +105,12 @@ const template = [
                 globalVars.mainWindow.reload();
             }
         },
-        {
-            label: 'open json settings',
-            click: () => {
-                require('child_process').exec(JSON.stringify( path.join(__dirname, 'config.json') ));
-            }
-        }
+        // {
+        //     label: 'open json settings',
+        //     click: () => {
+        //         require('child_process').exec(JSON.stringify( path.join(__dirname, 'config.json') ));
+        //     }
+        // }
         ]
     },
     {
