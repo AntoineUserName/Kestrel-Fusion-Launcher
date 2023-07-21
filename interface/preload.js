@@ -82,7 +82,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
             //return resolve(true);
 
-            if((window.navigator && navigator.onLine == false) || require('../config-manager')['not-update'] || require('../config-manager').indev) {
+            let config = require('../config-manager');
+
+            if((window.navigator && navigator.onLine == false) || config['not-update'] || config.indev) {
                 resolve(false);
                 return;
             }
@@ -95,14 +97,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
                         fs.readFileSync(path.join(appLocG, 'updater', "/checked.txt"), {encoding:'utf8'})
                     );
             
-                    if((oldTimeUpdate + (updaterConfig.secondsToWaitBeforeCheckUpdate * 1000)) > new Date().getTime()) {
+                    if(Number.isNaN(oldTimeUpdate) == false && (oldTimeUpdate + (updaterConfig.secondsToWaitBeforeCheckUpdate * 1000)) > new Date().getTime()) {
                         console.log("haven't time to update");
+
+                        resolve(updaterConfig.hasFoundUpdate === true);
                         return;
                     }
                     
                 }
 
-                fs.writeFileSync(path.join(appLocG, 'updater', "/checked.txt"), '' + (new Date().getTime()), {encoding:'utf8'});
             }
 
             function checkUpdates() {
@@ -112,7 +115,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
                     const uaup = require('uaup-js');
 
                     uaup.CheckForUpdates(updateOptions)
-                    .then(resolve)
+                    .then( canfupdate => {
+
+                        updaterConfig.hasFoundUpdate = canfupdate;
+
+                        fs.writeFileSync(path.join(appLocG, 'updater', "/config-updater.json"), JSON.stringify(updaterConfig), {encoding:'utf8'} );
+
+                        if(canUseDate) {
+                            fs.writeFileSync(path.join(appLocG, 'updater', "/checked.txt"), '' + (new Date().getTime()), {encoding:'utf8'});
+                        }
+
+                        resolve(canfupdate);
+                    })
                     .catch(err => reject(err));
                     
                     return;
