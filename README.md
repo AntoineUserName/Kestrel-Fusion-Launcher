@@ -4,9 +4,9 @@
 
 2. Download the setup : [https://github.com/AntoineUserName/Kestrel-Fusion-Launcher/releases/download/last-installer/Kestrel.Fusion.Launcher.Setup.exe](https://github.com/AntoineUserName/Kestrel-Fusion-Launcher/releases/download/last-installer/Kestrel.Fusion.Launcher.Setup.exe)
 
-3. Open it and install the app.
+3. Open it, if you have windows warning click on "more info" and "run anyway".
 
-5. Open the app, if you have windows warning click on "more info" and "run anyway"
+5. Complete the installer installation, open the app, if you have windows warning click on "more info" and "run anyway"
 
 6. The app ask you the exe game file, so choose the .exe file of the game.
 
