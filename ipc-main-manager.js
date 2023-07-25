@@ -87,7 +87,7 @@ ipcMain.on('removeMod', (ev, modname) => {
 // Open mod files
 ipcMain.on('viewMod', (ev, modname) => {
     console.log('open ' + JSON.stringify( path.join(modManager.modsFolder, modname) ));
-    childProcess.exec( "explorer " + JSON.stringify( path.join(modManager.modsFolder, modname) ) );
+    childProcess.exec( 'start "" ' + JSON.stringify( path.join(modManager.modsFolder, modname) ) );
 });
 
 
@@ -95,7 +95,7 @@ ipcMain.on('viewMod', (ev, modname) => {
 // ************* Launch the game : *************
 // *********************************************
 
-ipcMain.on('launch', (event) => {
+ipcMain.on('launch', () => {
     
     if(!canDoOtherActions) return;
     canDoOtherActions = false;
@@ -196,7 +196,15 @@ ipcMain.on('launch', (event) => {
                 cmdToRunAfter.forEach(
                     cmd => {
                         if(typeof(cmd) == 'string') {
-                            childProcess.exec( cmd )
+                            // childProcess.exec( cmd )
+
+                            
+                            childProcess.spawn(cmd,
+                            {
+                                shell: true,
+                                detached: true
+                            });
+                            
                         } else {
                             cmd();
                         }

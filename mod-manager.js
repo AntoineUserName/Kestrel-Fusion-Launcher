@@ -162,7 +162,7 @@ function setModIsActivated(modname, isactivated) {
                         filename => {
 
                             // If its a folder
-                            if(!filename.includes('.')) {
+                            if(fs.statSync(path.join(modFolderRealPath, filename)).isDirectory()) {
 
                                 rsrcPackFolderLoop( path.join(gamepath, '/' + filename) );
 
@@ -210,7 +210,7 @@ function setModIsActivated(modname, isactivated) {
                     filename => {
 
                         // If its a folder
-                        if(!filename.includes('.')) {
+                        if(fs.statSync(path.join(modFolderRealPath, filename)).isDirectory()) {
 
                             rsrcPackFolderLoop( path.join(gamepath, '/' + filename) );
                             return;
@@ -274,6 +274,14 @@ function launchMods() {
         modulesLocation: path.join(__dirname, 'node_modules')
     });
 
+    function execInNewBatProcess(commandtoex) {
+        child_process.spawn(commandtoex,
+        {
+            shell: true,
+            detached: true
+        });
+    }
+
 
     // Apply changes by the mods (SF files, bat, js and python codes) :
     config['activated-mods'].forEach(modname => {
@@ -333,9 +341,11 @@ function launchMods() {
                         return;
                     }
 
-                    child_process.exec(JSON.stringify(
-                        path.join(dirModP, filename)
-                    ));
+                    // child_process.spawn(JSON.stringify(
+                    //     path.join(dirModP, filename)
+                    // ), {detached: true});
+                    // execInNewBatProcess(JSON.stringify(path.join(dirModP, filename)));
+                    execInNewBatProcess(path.join(dirModP, filename));
                 }
             )
         }
@@ -398,7 +408,8 @@ function launchMods() {
                         return;
                     }
 
-                    child_process.exec("python " + JSON.stringify(path.join(dirModP, filename)));
+                    // child_process.exec("python " + JSON.stringify(path.join(dirModP, filename)));
+                    execInNewBatProcess("python " + JSON.stringify(path.join(dirModP, filename)));
                 }
             )
         }

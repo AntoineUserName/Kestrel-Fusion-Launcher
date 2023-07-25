@@ -79,27 +79,43 @@ if(config.notLoaded === 1 || config.notLoaded === 2) {
     );
     
 } else if(config.notLoaded == 0) {
+
+    if(!require('fs').existsSync('./config.json')) {
+
+        // If there are no config.json files write a new config.json
+        require('fs').writeFileSync('./config.json', JSON.stringify({
+            "activated-mods": [],
+            "user-preferences": {
+                "background":null,
+                "themes":[]
+            },
+            "fullscreen": false,
+            "firstTime": true
+        }), 'utf8');
+
+        app.relaunch();
+        app.quit();
+    } else {
     
-    app.whenReady().then(() => {
+        app.whenReady().then(() => {
 
-        const {dialog} = require('electron');
+            const {dialog} = require('electron');
 
-        dialog.showErrorBox('Error :',
+            dialog.showErrorBox('Error :',
 `The config.json file has a problem.
 It's probably due to a syntax error.
 
 To fix the problem go to the folder of this launcher and enter into config.json file and verify that the json file syntaxe is good, if you don't know the json syntaxe try to get help of other people or by tutorials`
-        );
+            );
         
-        setTimeout(() => {
-            app.quit();
-        }, 500);
-    });
+            setTimeout(() => {
+                app.quit();
+            }, 500);
+        });
+
+    }
     
 } else {
-    // // If this module found error in configuration files it stop the app
-    // console.log('checking config..');
-    // require('./check-config');
 
     // After checked everything execute the main file
     require('./main');
