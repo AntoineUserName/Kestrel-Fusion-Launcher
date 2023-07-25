@@ -20,7 +20,10 @@ require('./menu-builder'); // Create the menu
 require('./ipc-main-manager'); // Interactions main process <=> window process
 let memoryJS;
 
-if(config.firstTime) require("./first-time");
+if(config.firstTime) {
+    config.version = app.getVersion();
+    require("./first-time");
+}
 
 
 console.log('modules loaded');
