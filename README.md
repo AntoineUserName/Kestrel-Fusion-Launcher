@@ -1,18 +1,18 @@
 # Installation
 
-1. You need to extract the game files (I can't explain here how to make it sorry).
+1. You need to extract the game .DAT files using [(QuickBMS)](https://www.youtube.com/watch?v=_EQ3hPrh0V8).
 
 2. Download the setup : [https://github.com/AntoineUserName/Kestrel-Fusion-Launcher/releases/download/last-installer/Kestrel.Fusion.Launcher.Setup.exe](https://github.com/AntoineUserName/Kestrel-Fusion-Launcher/releases/download/last-installer/Kestrel.Fusion.Launcher.Setup.exe)
 
 3. Open it, if you have windows warning click on "more info" and "run anyway".
 
-5. Complete the installer installation, open the app, if you have windows warning click on "more info" and "run anyway"
+5. Complete the installation, open the app, if you have windows warning click on "more info" and "run anyway"
 
-6. The app ask you the exe game file, so choose the .exe file of the game.
+6. The app will ask you to locate the exe file of the game, so locate your game's install location and select it.
 
 # Using a mod
 
-Open the app and active the mod by the checkbox of the mod profile.
+Open the app, and then active a mod by clicking the checkbox for each one you would like to enable.
 
 # Adding a mod
 
@@ -26,15 +26,15 @@ Open the app and active the mod by the checkbox of the mod profile.
 
 # Create a mod
 
-All the necessary informations is here :
+All the necessary information is here :
 https://github.com/Kai-Denzel-Jane/LCU-SF-Docs/blob/main/KF-Launcher-Doc.md
 
 # How the launcher edit files ?
 
-Each time the launcher edits a file it saves a backup of the file at "GAMEPATH/KF-Files/backup-files" and if you use the beta version the backup folder is at "LAUNCHERPATH/resources/app/backup-files".
+Each time the launcher edits a file, it saves a backup of the file at "GAMEPATH/KF-Files/backup-files" and if you use the beta version the backup folder it's at "LAUNCHERPATH/resources/app/backup-files".
 
 # Copyrights
 
-This project use icons from https://heroicons.com/ :
+This project uses icons from https://heroicons.com/ :
 
 Copyright (c) 2020 Refactoring UI Inc.
