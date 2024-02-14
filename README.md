@@ -1,6 +1,6 @@
 # Installation
 
-1. You need to extract the game .DAT files using [(QuickBMS)](https://www.youtube.com/watch?v=_EQ3hPrh0V8).
+1. You need to extract the game .DAT files using [QuickBMS](https://www.youtube.com/watch?v=_EQ3hPrh0V8).
 
 2. Download the setup : [https://github.com/AntoineUserName/Kestrel-Fusion-Launcher/releases/download/last-installer/Kestrel.Fusion.Launcher.Setup.exe](https://github.com/AntoineUserName/Kestrel-Fusion-Launcher/releases/download/last-installer/Kestrel.Fusion.Launcher.Setup.exe)
 
