@@ -1,0 +1,130 @@
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif !important;
+}
+
+#editor-app {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+}
+
+#attributes-editor {
+    width: 20%;
+    height: 100%;
+    background: rgb(241, 241, 241);
+    border-right: solid 2px #d8d8d8;
+    text-align: end;
+    /* max-width: 171px; */
+    max-width: 246px;
+    overflow-y: auto;
+}
+
+#attributes-editor > input {
+    padding: 5px;
+    margin: 5px;
+    width: 53px;
+}
+
+#attributes-editor > .reset-v-button {
+    width: 25px;
+    height: 25px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#graphic-attributes-editor {
+    /* width: 20%; */
+    width: 40%;
+    max-width: 325px;
+    height: 100%;
+    border-left: solid 2px #97a0fd;
+    background: rgb(159 191 255);
+    padding-left: 5px;
+    overflow-y: auto;
+}
+
+#graphic-attributes-editor > .ginput-element {
+    background: white;
+    padding: 7px 12px;
+    width: fit-content;
+    border-radius: 7px;
+}
+
+#graphic-attributes-editor input {
+    user-select: none;
+    pointer-events: none;
+}
+
+#graphic-attributes-editor label {
+    /* background: white;
+    padding: 3px 8px;
+    border-radius: 5px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px; */
+    padding: 0px 2px;
+    text-overflow: ellipsis;
+    width: -webkit-fill-available;
+}
+
+
+/* #character-renderer {
+    width: 60%;
+    height: 100%;
+} */
+#character-renderer {
+    /* width: 0%; */
+    width: fit-content;
+    height: 100%;
+}
+
+
+/***********************************************
+*   Render inputs (the face, the hands...) :   *
+************************************************/
+
+/* #character-renderer > .render-input {
+    width: 50px;
+    height: 50px;
+    background: rgb(97, 100, 109);
+    border: 2px solid black; */
+    /* border-radius: 4px; */
+/* }
+
+#character-renderer > .render-input > .r-input-filled {
+    background: rgb(109, 255, 72);
+}
+
+
+#character-renderer > #front-face {}
+#character-renderer > #back-face {} */
+
+
+#center-popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+
+    background: #aeaeae7e;
+    z-index: 999999;
+}
+
+#page-locker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question</title>
+    <style>
+        * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+        }
+
+        #question-box {
+            padding: 50px;
+        }
+
+        #question-text {
+            font-size: 20px;
+        }
+        
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 15px 5px;
+            background-color: #ececec;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            /* box-shadow: rgba(191, 191, 191, 0.549) 0 0 5px; */
+            box-shadow: rgb(108 103 103 / 55%) 0 0 5px;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            background-color: #efefef;
+            box-shadow: blue 0 0 5px;
+        }
+
+        #response-input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid;
+            border-radius: 4px;
+            font-size: 18px;
+            background: #f2f2f2;
+        }
+        
+        #response-input:focus {
+            outline: solid 1px #0000ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="question-box">
+        <p id="question-text"></p>
+        <input id="response-input" type="text" autofocus>
+        <button id="cancel-button" onclick="window.close();">Cancel</button>
+        <button id="accept-button" style="float: right;" onclick="electronAPI.sendRes();"></button>
+    </div>
+    <script>
+        document.querySelector('#response-input').onkeydown = (ev) => {
+            if((!ev) || (ev.key+'').toLowerCase() != 'enter') return;
+            electronAPI.sendRes();
+        }
+    </script>
+</body>
+</html>

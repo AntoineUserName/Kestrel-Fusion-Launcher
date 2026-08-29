@@ -1,0 +1,364 @@
+Global Character cPlayer1;
+Global Character cPlayer2;
+
+
+Global CityArray JS_C_API_textArgs( CityArray_Create("Text") );
+Global CityArray JS_C_API_numberArgs( CityArray_Create("Number") );
+Global Text JS_C_API_modId( "" );
+Global Bool JS_C_API_gotMsg(false);
+
+
+
+// WorldLevel wlCity("Gamemechanicstestarea");
+WorldLevel wlCity("Lego_City");
+
+// Bool canUseConditionLoop( false );
+
+
+Job unusedJob("City_Setup.Bonus_Missions.Ambulance_Missions.SF_Residential");
+Text jobForModsKey("TileNumber_Start");
+Number lastJobNumberValue(0);
+
+Text communicationIMod( "KF_MODDING_VARIABLE_F547591_END" );
+
+Text lastStrValue( "S_KF_MODDING_VARIABLE_F547591_END" );
+
+// Bool canReceiveNewMsg(true);
+Bool canReceiveNewMsg(false);
+
+
+
+
+
+// Function setCVarValue (Text cVarVal) {
+// Function setCVarValue (Number cVarVal) {
+    
+//     unusedJob.SetValue(jobForModsKey, cVarVal);
+
+//     // communicationIMod = cVarVal;
+//     // lastStrValue = "S_" + communicationIMod;
+// };
+
+
+// Function textToInt (Text txt) returns Number
+// {
+//     if(txt == "00") { return 0; }
+//     if(txt == "01") { return 1; }
+//     if(txt == "02") { return 2; }
+//     if(txt == "03") { return 3; }
+//     if(txt == "04") { return 4; }
+//     if(txt == "05") { return 5; }
+//     if(txt == "06") { return 6; }
+//     if(txt == "07") { return 7; }
+//     if(txt == "08") { return 8; }
+//     if(txt == "09") { return 9; }
+    
+//     if(txt == "10") { return 10; }
+//     if(txt == "11") { return 11; }
+//     if(txt == "12") { return 12; }
+//     if(txt == "13") { return 13; }
+//     if(txt == "14") { return 14; }
+//     if(txt == "15") { return 15; }
+//     if(txt == "16") { return 16; }
+//     if(txt == "17") { return 17; }
+//     if(txt == "18") { return 18; }
+//     if(txt == "19") { return 19; }
+//     if(txt == "20") { return 20; }
+//     if(txt == "21") { return 21; }
+//     if(txt == "22") { return 22; }
+//     if(txt == "23") { return 23; }
+//     if(txt == "24") { return 24; }
+//     if(txt == "25") { return 25; }
+//     if(txt == "26") { return 26; }
+//     if(txt == "27") { return 27; }
+//     if(txt == "28") { return 28; }
+//     if(txt == "29") { return 29; }
+//     if(txt == "30") { return 30; }
+//     if(txt == "31") { return 31; }
+//     if(txt == "32") { return 32; }
+//     if(txt == "33") { return 33; }
+//     if(txt == "34") { return 34; }
+//     if(txt == "35") { return 35; }
+//     if(txt == "36") { return 36; }
+//     if(txt == "37") { return 37; }
+//     if(txt == "38") { return 38; }
+//     if(txt == "39") { return 39; }
+//     if(txt == "40") { return 40; }
+//     if(txt == "41") { return 41; }
+//     if(txt == "42") { return 42; }
+//     if(txt == "43") { return 43; }
+//     if(txt == "44") { return 44; }
+//     if(txt == "45") { return 45; }
+//     if(txt == "46") { return 46; }
+//     if(txt == "47") { return 47; }
+//     if(txt == "48") { return 48; }
+//     if(txt == "49") { return 49; }
+//     if(txt == "50") { return 50; }
+//     if(txt == "51") { return 51; }
+//     if(txt == "52") { return 52; }
+//     if(txt == "53") { return 53; }
+//     if(txt == "54") { return 54; }
+//     if(txt == "55") { return 55; }
+//     if(txt == "56") { return 56; }
+//     if(txt == "57") { return 57; }
+//     if(txt == "58") { return 58; }
+//     if(txt == "59") { return 59; }
+//     if(txt == "60") { return 60; }
+//     if(txt == "61") { return 61; }
+//     if(txt == "62") { return 62; }
+//     if(txt == "63") { return 63; }
+//     if(txt == "64") { return 64; }
+//     if(txt == "65") { return 65; }
+//     if(txt == "66") { return 66; }
+//     if(txt == "67") { return 67; }
+//     if(txt == "68") { return 68; }
+//     if(txt == "69") { return 69; }
+//     if(txt == "70") { return 70; }
+//     if(txt == "71") { return 71; }
+//     if(txt == "72") { return 72; }
+//     if(txt == "73") { return 73; }
+//     if(txt == "74") { return 74; }
+//     if(txt == "75") { return 75; }
+//     if(txt == "76") { return 76; }
+//     if(txt == "77") { return 77; }
+//     if(txt == "78") { return 78; }
+//     if(txt == "79") { return 79; }
+//     if(txt == "80") { return 80; }
+//     if(txt == "81") { return 81; }
+//     if(txt == "82") { return 82; }
+//     if(txt == "83") { return 83; }
+//     if(txt == "84") { return 84; }
+//     if(txt == "85") { return 85; }
+//     if(txt == "86") { return 86; }
+//     if(txt == "87") { return 87; }
+//     if(txt == "88") { return 88; }
+//     if(txt == "89") { return 89; }
+//     if(txt == "90") { return 90; }
+//     if(txt == "91") { return 91; }
+//     if(txt == "92") { return 92; }
+//     if(txt == "93") { return 93; }
+//     if(txt == "94") { return 94; }
+//     if(txt == "95") { return 95; }
+//     if(txt == "96") { return 96; }
+//     if(txt == "97") { return 97; }
+//     if(txt == "98") { return 98; }
+//     if(txt == "99") { return 99; }
+
+//     return 0;
+// };
+
+
+
+
+// Global CityArray modIdsEventOnMsg( CityArray_Create("Text") );
+// Global CityArray eventOnMsg( CityArray_Create("Function") );
+
+// Function onJSSendMsgFunc (Text modId, Function eventCallback) {
+//     modIdsEventOnMsg.Add(modId);
+//     eventOnMsg.Add(eventCallback);
+// };
+
+// Global Function onJSSendMsg( onJSSendMsgFunc );
+
+// ?
+// Global Function onJSSendMsg (Text modId, Function eventCallback) {
+//     modIdsEventOnMsg.Add(modId);
+//     eventOnMsg.Add(eventCallback);
+// };
+
+
+
+
+Number cCodeMsgRECEIVED(2399999); // length : 7;
+Text specialCharC( "_" );
+
+Text MSG_ID_INT ( specialCharC + "INT_SENT" );
+Text MSG_ID_FAST_FLOAT ( specialCharC + "F_FLOAT_SENT" );
+Text MSG_ID_FLOAT ( specialCharC + "FLOAT_SENT" );
+Text MSG_ID_N_FLOAT ( specialCharC + "N_FLOAT_SENT" );
+Text MSG_ID_END ( specialCharC + "END_MSG" );
+
+
+State Base() {
+    Conditions
+    {
+        if(lastStrValue != "S_" + communicationIMod) {
+            
+            lastStrValue = "S_" + communicationIMod;
+
+            if(communicationIMod == "JS_CONNECTED") {
+                
+                While(!wlCity.IsLoaded()) {};
+                wait(0.4);
+
+                goto JSConnectedMain();
+            }
+        }
+
+//            if(PlayerPressedButton("L3")) {
+//                
+//                unusedJob.SetValue(varForModsKey, 41753);
+//
+//                PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+//                wait(0.1);
+//                PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+//            }
+//
+//            
+//            if(PlayerPressedButton("A")) {
+//                
+//                unusedJob.SetValue(varForModsKey, unusedJob.GetValue(varForModsKey) + 1);
+//
+//                PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+//            }
+
+    };
+    Actions
+    {
+        While(!wlCity.IsLoaded()) {};
+        wait(6);
+        lastJobNumberValue = 123445;
+        unusedJob.SetValue(jobForModsKey, 123445);
+        UI_ShowObjectiveScreen ( true, "INIT_KF_MODDED_TEXT_1", 14, false );
+
+
+
+        //wait(0.2);
+        //if( lastStrValue == "S_" + communicationIMod) {
+        //    PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+        //}
+        //wait(0.2);
+        //if( lastStrValue == "" + communicationIMod) {
+        //    PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+        //}
+
+
+        //wait(5);
+
+        //canUseConditionLoop = true;
+        
+        // init value : 0
+        // unusedJob.SetValue(varForModsKey, 0);
+    };
+};
+
+
+State JSConnectedMain() {
+    Conditions
+    {
+
+        // When JS sended a message
+        if(lastStrValue != "S_" + communicationIMod && canReceiveNewMsg) {
+
+            canReceiveNewMsg = false;
+            lastStrValue = "S_" + communicationIMod;
+
+            Text requestType( communicationIMod );
+            
+            // CityArray numberArgs( CityArray_Create("Number") );
+            // CityArray textArgs( CityArray_Create("Text") );
+
+            JS_C_API_numberArgs.Clear();
+            JS_C_API_textArgs.Clear();
+            
+            Bool continueMsgLoop(true);
+
+            Number floatSendedNumber(0); // If need to send a float number, this number will be sended by multiples messages (a message for the float part and a second for the int part);
+            Bool receivingNegativeN(false);
+
+            While (continueMsgLoop) {
+                
+                // For say that the message is received :
+                lastJobNumberValue = cCodeMsgRECEIVED;
+                unusedJob.SetValue(jobForModsKey, cCodeMsgRECEIVED);
+                
+                While (unusedJob.GetValue(jobForModsKey) == lastJobNumberValue) {};
+
+                lastJobNumberValue = unusedJob.GetValue(jobForModsKey);
+                lastStrValue = "S_" + communicationIMod;
+
+                // If its an int message :
+                if(communicationIMod == MSG_ID_INT) {
+
+                    Number intToSend( lastJobNumberValue );
+
+                    // for negative numbers messages :
+                    if(receivingNegativeN) {
+                        intToSend = intToSend * -1;
+                        receivingNegativeN = false;
+                    }
+
+                    if(floatSendedNumber == 0) {
+                        JS_C_API_numberArgs.Add(intToSend);
+                    } else {
+                        // If is sending a float increment the float and add it to the list :
+                        floatSendedNumber = floatSendedNumber + intToSend;
+                        
+                        JS_C_API_numberArgs.Add(floatSendedNumber);
+                        floatSendedNumber = 0;
+                    }
+                } else {
+
+                    if(communicationIMod == MSG_ID_FAST_FLOAT) {
+                        
+                        JS_C_API_numberArgs.Add((lastJobNumberValue / 100) - 1000);
+
+                    } elseif(communicationIMod == MSG_ID_FLOAT) {
+                        floatSendedNumber = floatSendedNumber + (lastJobNumberValue * 0.0000001);
+                    } else {
+                        
+                        if(communicationIMod == MSG_ID_N_FLOAT) {
+                            // for negative numbers
+                            receivingNegativeN = true;
+                            floatSendedNumber = floatSendedNumber + (lastJobNumberValue * -0.0000001);
+                        } else {
+
+                            if(communicationIMod == MSG_ID_END) {
+                                // If the message finished :
+                                continueMsgLoop = false;
+                            } else {
+
+                                // If its a text message :
+                                JS_C_API_textArgs.Add(communicationIMod);
+                            }
+                        }
+                    }
+                }
+            };
+
+            // WHEN MESSAGE FINISHED :
+
+            JS_C_API_modId = requestType;
+            JS_C_API_gotMsg = true;
+            // While (JS_C_API_modId != "") { // wait that a mod intercept the request;
+            While (JS_C_API_gotMsg) { // wait that a mod intercept the request;
+                wait(0.04);
+            };
+            // JS_C_API_gotMsg = false;
+
+            // For say that the message is received :
+            lastJobNumberValue = cCodeMsgRECEIVED;
+            unusedJob.SetValue(jobForModsKey, cCodeMsgRECEIVED);
+            // PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+            canReceiveNewMsg = true;
+
+        }
+    };
+    Actions
+    {
+        wait(0.4);
+
+        
+        canReceiveNewMsg = true;
+
+        lastJobNumberValue = 46543;
+        unusedJob.SetValue(jobForModsKey, 46543);
+        UI_ShowObjectiveScreen ( true, "INIT_KF_MODDED_TEXT_2", 6, false );
+        PlaySFX(sfx="UI_CodeBreak_CheatUnlocked");
+        
+        
+    };
+};
+
+
+Base();

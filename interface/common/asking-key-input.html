@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Press a key</title>
+    <style>
+        * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen sans-serif !important;
+            font-size: 20px;
+        }
+
+        #key-pressed {
+            user-select: none;
+        }
+
+        button {
+            font-size: 22px;
+            user-select: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: none;
+            background: rgb(211, 211, 211);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body style="
+    text-align: center;
+">
+    <p id="txt"></p>
+    <label id="key-pressed"></label>
+
+    <p></p>
+
+    <button disabled id="accept-key" onclick=" electronAPI.sendAcceptKey(); ">Use this key</button> <button onclick=" window.close(); ">Cancel</button>
+</body>
+</html>

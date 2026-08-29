@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kestrel Fusion Launcher - Save Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="save-manager-app">
+
+        <div id="profiles-panel">
+            <h2>Profiles</h2>
+
+            <select id="profile-list" size="8"></select>
+
+            <div class="panel-actions">
+                <button id="create-profile">Create</button>
+                <button id="rename-profile">Rename</button>
+                <button id="delete-profile">Delete</button>
+            </div>
+        </div>
+
+        <div id="profile-details">
+            <h2 style="
+                margin-top: -2px;
+                margin-bottom: 0px;
+            ">Save Manager Details</h2>
+
+            <div class="info-block">
+                <label  style="
+                margin-bottom: 0px;
+                margin-top: 4px;">Active Profile</label>
+                <div id="active-profile-name">-</div>
+            </div>
+
+            <div class="info-block">
+                <label>Current Profile</label>
+                <div id="current-profile-name">-</div>
+            </div>
+
+            <div class="info-block">
+                <label>Saves in Game Folder</label>
+                <div id="game-save-count">-</div>
+            </div>
+
+            <div class="info-block">
+                <label>Saves in Current Profile</label>
+                <div id="profile-save-count">-</div>
+            </div>
+
+            <div class="actions-block">
+                <button id="export-saves" class="wide-button"> Export functions</button>
+                <button id="import-saves" class="wide-button">Import functions</button>
+                <button class="dump-saves-btn">Copy saves to new profile</button>
+                <button id="help-btn" class="help-button">Help</button>
+            </div>
+
+            <div class="actions-block">
+                <button id="load-profile" class="wide-button" class="wide-button">
+                    ▶ Load profile saves to game
+                </button>
+            </div>
+
+            <p class="warning-text">
+                Make sure that steam cloud is disabled.
+            </p>
+
+            <button id="see-profiles-backups" class="mini-btn">See profiles backups</button>
+        </div>
+
+
+    </div>
+
+    <div id="create-profile-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3 id="create-or-rename-profile-txt"></h3>
+            <input type="text" id="new-profile-name" placeholder="Enter profile name" />
+
+            <div class="modal-buttons">
+                <button id="cancel-create">Cancel</button>
+                <button id="confirm-create"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="import-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Import Functions</h3>
+
+            <button id="import-profile-btn">Import profile folder</button>
+            <button id="import-slot-btn">Import slot to current profile</button>
+            <button id="import-backup-btn">Import backup</button>
+
+            <div class="modal-buttons">
+                <button id="close-import">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="export-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Export Functions</h3>
+
+            <button id="export-profile-btn">Export profile to folder</button>
+            <button id="export-slot-btn">Export slot from game</button>
+            <button class="dump-saves-btn">Dump game saves to new profile</button>
+
+            <div class="modal-buttons">
+                <button id="close-export">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="select-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3 id="select-modal-title">Select Item</h3>
+
+            <select id="select-modal-list" size="8"></select>
+
+            <div class="modal-buttons">
+                <button id="select-cancel">Cancel</button>
+                <button id="select-confirm">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dump-save-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Create New Profile name</h3>
+            <input type="text" id="dump-save-name" placeholder="Enter profile name" />
+
+            <div class="modal-buttons">
+                <button id="dump-save-cancel">Cancel</button>
+                <button id="dump-save-confirm">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="steam-cloud-warning" style="display:none;">
+        <div class="modal-content">
+            <h1>Turn off Steam Cloud</h1>
+            <p>To use the save manager safely, please disable Steam Cloud for this game:</p>
+            <ol>
+                <li>Open Steam library</li>
+                <li>Right-click your game → Settings icon → Properties</li>
+                <li>Uncheck "Keep games saves in the Steam Cloud"</li>
+            </ol>
+            <button id="steam-cloud-ok">OK</button>
+        </div>
+    </div>
+
+    <div id="help-modal" class="modal" style="display: none;">
+        <div class="modal-content help-content">
+
+            <h1>Save Manager Help</h1>
+
+            <h2>Problem solving</h2>
+
+            <div class="help-section">
+                <h3>Ingame save issues</h3>
+                <p>
+                    If you have problems with save files showing as empty in the game then you must start a new game in that specific slot from within lcu (make sure you don't overwright important saves. Otherwise you need to load a backup. See 'import backup').
+                    Note: It is normal that the save file slots get shown as 'corrupted' if they don't have any content. You can safely overwright them.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Steam cloud save issue</h3>
+                <p>
+                    The save manager won't work if steam cloud is enabled. The online backup will always overwright your loaded save files. Make totally sure that it is disabled in steam.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <h2>Main UI explenation</h2>
+
+            <div class="help-section">
+                <h3>List of profiles</h3>
+                <p>
+                    On the left there is the list of available profiles. The slected profile will turn blue as a indication that you selected a current profile.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Create/Delete Profiles</h3>
+                <p>
+                    These functions are pretty straight forward. Create makes a new empty profile. Delete profile deletes the profile folder of the currently selected profile in the list left.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Save Manager Details</h3>
+                <p>
+                    This section is also pretty straight forward. It shows the profile that is loaded in the game at this moment, it shows which profile from the list is selected right now,
+                    under these are the numbers of save file slots found in the game and in the selected profile.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <h2>Export functionality</h2>
+
+            <div class="help-section">
+                <h3>Export profile to folder</h3>
+                <p>
+                    The first function exports the current selected profile to a selected folder. Just select the folder on your pc and the profile is fully copied to that location. Note: When you want to export the files loaded in the game
+                    it is better to use this feature, see: 'dump game saves to profile' or load a different profile to the game because the profile will still have the old save files from the last load until a new profile gets loaded.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Export slot from game</h3>
+                <p>
+                    This second function lets you choose a save file slot loaded in the game to the profile currently selected. Note: This feature will overwright slots in the current profile if the chosen slot number already exists.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Dump game saves to new profile</h3>
+                <p>
+                    This third function lets you create a new profile with a new name and makes a dump of all the save files currently used by the game. Note: It's not possible to overwright a existing save profile. Think of a new name.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <h2>Import Functionality</h2>
+
+            <div class="help-section">
+                <h3>Import profile folder</h3>
+                <p>
+                    This first import function asks the user for a profile from your pc and imports it to the save manager system.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Import slot to current profile</h3>
+                <p>
+                    This second import function looks a lot like the 'export slot from game' only this one uses a slot from your pc instead of a slot loaded in the game. So it asks for a external slot and copies it to the currently selected profile.
+                    Note: This function also overwrights the slot in the current profile if you chose a slot that is already in there.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="help-section">
+                <h3>Import backup</h3>
+                <p>
+                    When you load a new profile in a new backup is made (max 2 backups are available at any time. The oldest get deleted if you go over the limit). These backups can be restored with this function. It asks the user to choose a backup
+                    and loads it to the profile this backup is about. Note: These backups overwright the save files that are already in the profile. If you don't want to lose those you can export them as a profile and then import them afterwards with a rename.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <h2>Profile Loading</h2>
+
+            <!-- Steam Cloud waarschuwing -->
+            <div class="help-section">
+                <h3>Load profile to game</h3>
+                <p>
+                    This feature is the core of the manager. It uses a few steps to load profiles in a safe way. Firstly it exports the game save files as a backup of the active profile. Then it deletes the files from the active profile. After that
+                    it copies the game save files to the active profile and it ends with deleting the game save files to fill it with the save files from the current profile. Note: It's (as you may have seen) forbidden to change save files while the game
+                    is running because of some gamebreaking bugs.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <!-- Steam Cloud waarschuwing -->
+            <div class="help-section">
+                <h3>Profile paths</h3>
+                <p>
+                    The profiles are saved at KF-Files in your game folder.
+                </p>
+            </div>
+
+            <div class="help-divider"></div>
+
+            <div class="modal-buttons">
+                <button id="close-help-btn">Close</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/savemanager-page-main.js"></script>
+
+</body>
+</html>

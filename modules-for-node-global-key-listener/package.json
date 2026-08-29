@@ -1,0 +1,15 @@
+{
+  "name": "modules-for-node-global-key-listener",
+  "version": "1.0.0",
+  "description": "This folder is used for store the modules required for detect the keyboard in the game.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-global-key-listener": "^0.1.1"
+  }
+}

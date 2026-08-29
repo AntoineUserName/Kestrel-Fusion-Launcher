@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimiser</title>
+
+    <style>
+        * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #cancellers-container > div {
+            
+            border: 1px black solid;
+            width: max-content;
+            padding: 7px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+
+        }
+        #cancellers-container > div > button {
+            margin-left: 5px;
+        }
+
+    </style>
+
+</head>
+<body>
+    
+    <p>By deleting any files you know that it may lead to loose contents and features.</p>
+
+    <p style="margin-bottom: 0;">
+        Deleting voices :
+    </p>
+    <p style="margin-top: 0;margin-bottom: 2px;font-size: 12px;">(each ones can take around 1G of storage)</p>
+
+    <button data-folderid="DAN"> Danish </button>
+    <button data-folderid="DUT"> Dutch </button>
+    <button data-folderid="FRE"> French </button>
+    <button data-folderid="GER"> German </button>
+    <button data-folderid="ITA"> Italian </button>
+    <button data-folderid="JPN"> Japanese </button>
+    <button data-folderid="POR"> Portugese </button>
+    <button data-folderid="RUS"> Russian </button>
+    <button data-folderid="SPA"> Spanish </button>
+
+    
+    <!-- <button id="test">test</button> -->
+
+    <p style="margin-bottom: 2px">Cutscenes: (many cutscenes are not movie-cutscenes)</p>
+    <button id="del-ger-cuts">Delete German-Only movie-cutscenes</button>
+    <p style="margin: 2px"></p>
+    <button id="del-all-cuts">Delete all movie-cutscenes</button>
+    
+
+    <div id="cancellers-container"></div>
+
+    <p style="margin-bottom: 2px;">Also for saving around 3Giga its possible to delete some levels folder but these levels won't be loadable anymore :</p>
+    <button id="open-sublvl-dir">Open sub-levels folder</button>
+    <button id="open-testlvl-dir">Open test levels folder</button>
+
+</body>
+</html>

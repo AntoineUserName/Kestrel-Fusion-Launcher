@@ -1,0 +1,50 @@
+body {
+    background-color: #ffe7f1;
+}
+
+
+
+#mod-container > .mod-display {
+    background: #ffffff;
+    border: none;
+}
+
+#input-search-mod {   
+    /* border: 1px #ffc3c3 solid; */
+    border: none;
+}
+
+
+#mod-container > .mod-display > .checkbox-box > .input-skin {
+    
+    background: rgb(255, 64, 64);
+    box-shadow: 0 0 5px 3px rgba(255, 64, 64, 0.4);
+}
+
+#mod-container > .mod-display > .checkbox-box > input:checked ~ .input-skin {
+    background: rgb(118, 255, 129);
+    box-shadow: 0 0 5px 3px rgba(118, 255, 129, 0.4);
+}
+
+
+
+
+#blue-buttons-parent > button {
+    /* background: rgb(255, 85, 76); */
+    background: rgba(255, 162, 157, 0.692);
+    /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.451); */
+    border: 8px solid white;
+}
+
+
+
+#launch-game button {
+    background: rgba(255, 76, 88, 0.656);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.451);
+    color: white;
+}
+
+#launch-game button:hover {
+
+    background: rgb(255, 76, 88);
+}

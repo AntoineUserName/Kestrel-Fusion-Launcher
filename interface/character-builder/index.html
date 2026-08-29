@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kestrel Fusion Launcher - Character Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="editor-app">
+    
+        <div id="attributes-editor"></div>
+        <div id="character-renderer">
+            <p></p>
+            Need help to create your character?
+            Press "Create Mod" and read the Characters.md file
+        
+            <p>
+                Tips:
+
+                Use an id with 5 letters, try something unique which represents your mod
+                <p></p>
+
+                The textures must be in the DDS format, many softwares can make and edit DDS images
+                <p style="margin: 1px 0px;"></p>
+                Use the same textures sizes as the textures in this <button onclick="electronAPI.openTemplateCharacterFolder();">Folder</button>
+
+                <p></p>
+
+                Put a cheatcode for that you can unlock your character
+                
+                <p></p>
+            
+                If you want to add a hat or hairs:
+                <p style="margin: 3px 0px;"></p>
+                Put the name of the hat/hairs without "HAT_" or "HAIR_" at the start and without the extension
+                <p style="margin: 1px 0px;"></p>
+                You can't use a hat and hairs in the same character, just one of them or none
+
+            </p>
+
+        </div>
+        <div id="graphic-attributes-editor">
+            <p></p>
+            <label style="
+            border-radius: 4px;
+            padding: 5px 25px;
+            background: white;
+                ">Graphic attributes</label>
+            <p></p>
+        </div>
+    
+    </div>
+    <div id="center-popup" style="display: none;"></div>
+    <div id="page-locker" style="display: none;"></div>
+
+    <script src="js/main.js"></script>
+
+    <script src="js/attr-editor.js"></script>
+    <script src="js/textures-editor.js"></script>
+
+</body>
+</html>
